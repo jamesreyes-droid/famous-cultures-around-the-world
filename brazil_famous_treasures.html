@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Brazil: Carnival & Football!</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brazil-green': '#009C3B',
+                        'brazil-darkgreen': '#006B28',
+                        'brazil-yellow': '#FFDF00',
+                        'brazil-gold': '#E5C200',
+                        'brazil-blue': '#002776',
+                        'brazil-darkblue': '#00194A',
+                        'carnival-pink': '#EC4899',
+                        'carnival-purple': '#A855F7',
+                        'brazil-cream': '#F0FDF4'
+                    },
+                    fontFamily: {
+                        'heading': ['Fredoka', 'sans-serif'],
+                        'body': ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #F0FDF4;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Color-coded badges for Carnival and Football */
+        .tag-carnival {
+            background-color: #FDF2F8;
+            color: #BE185D;
+            border: 2px solid #EC4899;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 6px rgba(236, 72, 153, 0.25);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .tag-carnival:hover {
+            transform: scale(1.05);
+        }
+
+        .tag-football {
+            background-color: #FEFCE8;
+            color: #854D0E;
+            border: 2px solid #CA8A04;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 6px rgba(202, 138, 4, 0.25);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .tag-football:hover {
+            transform: scale(1.05);
+        }
+
+        /* Active sentence highlighting when speech synthesis plays */
+        .sentence-active {
+            background-color: #FEF08A !important;
+            border-radius: 6px;
+            padding: 2px 4px;
+            box-shadow: 0 0 8px rgba(250, 204, 21, 0.8);
+            transition: all 0.2s ease;
+        }
+
+        /* Vocabulary hover tooltip styling */
+        .vocab-tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px dashed #009C3B;
+            color: #006B28;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .vocab-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 160px;
+            background-color: #00194A;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 6px 8px;
+            position: absolute;
+            z-index: 30;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .vocab-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .bounce-slow {
+            animation: bounceSlow 2s infinite;
+        }
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header / Banner -->
+    <header class="bg-gradient-to-r from-brazil-darkgreen via-brazil-green to-brazil-blue text-white shadow-lg sticky top-0 z-50 border-b-4 border-brazil-yellow">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl bounce-slow">🇧🇷</span>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-wide text-brazil-yellow">Explore Brazil! 巴西文化之旅</h1>
+                    <p class="text-xs md:text-sm text-green-100 font-bold">Grade 6 EFL Visual Reading (Female US Accent 🎙️ - Clean Voice)</p>
+                </div>
+            </div>
+            
+            <!-- Audio Controls Toolbar -->
+            <div class="flex items-center space-x-2 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
+                <span class="text-xs font-bold text-brazil-yellow hidden sm:inline"><i class="fas fa-venus text-pink-300"></i> US Female Voice</span>
+                <button onclick="toggleSpeed()" id="speedBtn" class="bg-brazil-yellow text-green-950 font-bold text-xs px-3 py-1 rounded-full hover:bg-yellow-300 transition shadow">
+                    ⚡ Speed: <span id="speedVal">1.0x</span>
+                </button>
+                <button onclick="stopSpeech()" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold transition shadow flex items-center space-x-1">
+                    <i class="fas fa-stop"></i> <span>Stop 停止</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow space-y-8">
+
+        <!-- Visual Cue Spotlight Cards -->
+        <section class="bg-gradient-to-br from-green-100 via-yellow-50 to-blue-100 p-6 rounded-3xl border-2 border-green-300 shadow-md space-y-4">
+            <div class="text-center space-y-1">
+                <span class="bg-brazil-yellow text-green-950 text-xs font-black uppercase px-3 py-1 rounded-full shadow-sm">Target Vocabulary 重點單字</span>
+                <h2 class="text-2xl font-black text-gray-800">Two Famous Brazilian Highlights!</h2>
+                <p class="text-xs md:text-sm text-gray-600 font-semibold">Tap any card or speaker button 🔊 to hear clean English audio without icon sounds!</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <!-- Card 1: Carnival -->
+                <div onclick="speakWord('Carnival')" class="bg-white p-4 rounded-2xl border-2 border-pink-400 shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-pink-100 border-2 border-pink-400 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition">
+                            🎭
+                        </div>
+                        <div>
+                            <span class="tag-carnival text-lg">
+                                🎭 Carnival
+                            </span>
+                            <p class="text-xs text-gray-600 font-bold mt-1">嘉年華狂歡節</p>
+                            <span class="inline-block text-[10px] bg-pink-100 text-pink-900 font-bold px-2 py-0.5 rounded mt-0.5">Grand Festival 🎉</span>
+                        </div>
+                    </div>
+                    <button class="w-12 h-12 bg-carnival-pink group-hover:bg-pink-600 text-white rounded-full flex items-center justify-center shadow-md text-xl transition">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+
+                <!-- Card 2: Football -->
+                <div onclick="speakWord('Football')" class="bg-white p-4 rounded-2xl border-2 border-yellow-500 shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-yellow-100 border-2 border-yellow-500 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition">
+                            ⚽
+                        </div>
+                        <div>
+                            <span class="tag-football text-lg">
+                                ⚽ Football
+                            </span>
+                            <p class="text-xs text-gray-600 font-bold mt-1">足球 (Soccer)</p>
+                            <span class="inline-block text-[10px] bg-yellow-100 text-yellow-900 font-bold px-2 py-0.5 rounded mt-0.5">National Sport 🏆</span>
+                        </div>
+                    </div>
+                    <button class="w-12 h-12 bg-brazil-green group-hover:bg-green-700 text-white rounded-full flex items-center justify-center shadow-md text-xl transition">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Short Reading Article Container -->
+        <section class="bg-white rounded-3xl shadow-xl border-2 border-brazil-green overflow-hidden">
+            <!-- Article Header Bar -->
+            <div class="bg-gradient-to-r from-brazil-darkgreen via-brazil-green to-brazil-blue p-5 text-white flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <span class="bg-brazil-yellow text-green-950 font-black text-xs px-3 py-1 rounded-full uppercase">Short Story 簡短文章</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-brazil-yellow mt-1">Famous Brazil: Carnival & Football 巴西狂歡與足球</h2>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="readFullArticle()" class="bg-brazil-yellow hover:bg-yellow-300 text-green-950 font-black px-4 py-2 rounded-xl shadow-md flex items-center space-x-2 transition transform active:scale-95 text-sm">
+                        <i class="fas fa-play-circle text-lg"></i>
+                        <span>Read Full Story 朗讀全文</span>
+                    </button>
+                    <button onclick="toggleAllChinese()" class="bg-white/20 hover:bg-white/30 text-white font-bold px-3 py-2 rounded-xl border border-white/30 text-xs transition">
+                        <i class="fas fa-language text-base"></i> <span id="toggleAllBtnText">Show Chinese 顯示中文</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reading Paragraphs -->
+            <div class="p-5 md:p-8 space-y-6 text-base md:text-lg leading-relaxed">
+
+                <!-- Sentence 1: Country intro -->
+                <div class="p-4 bg-green-50/70 rounded-2xl border border-green-200 space-y-2 hover:border-green-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-green-900 bg-green-200 px-2.5 py-0.5 rounded-full">Part 1 📍 The Country 國家</span>
+                        <button onclick="speakSentence('s1')" class="text-brazil-darkgreen bg-green-200 hover:bg-green-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s1_1" class="sentence-node">Brazil is a big and warm country in <span class="vocab-tooltip" onclick="speakWord('South America')">South America<span class="tooltip-text">南美洲 🌎</span></span>.</span>
+                        <span id="s1_2" class="sentence-node">It is famous for the Amazon rainforest, sunny beaches, and happy people!</span>
+                    </p>
+                    <div id="trans1" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-green-200 font-semibold">
+                        🇨🇳 巴西是位於南美洲的一個又大又溫暖的國家。它以亞馬遜熱帶雨林、陽光明媚的海灘和熱情快樂的人們而聞名！
+                    </div>
+                    <button onclick="toggleTrans('trans1')" class="text-xs font-bold text-green-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 2: Carnival -->
+                <div class="p-4 bg-pink-50/70 rounded-2xl border border-pink-200 space-y-2 hover:border-pink-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-pink-900 bg-pink-200 px-2.5 py-0.5 rounded-full">Part 2 🎭 Grand Festival 狂歡節</span>
+                        <button onclick="speakSentence('s2')" class="text-carnival-pink bg-pink-200 hover:bg-pink-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s2_1" class="sentence-node">Every year, millions of people celebrate <span class="tag-carnival" onclick="speakWord('Carnival')">🎭 Carnival</span>.</span>
+                        <span id="s2_2" class="sentence-node">Dancers wear colorful <span class="vocab-tooltip" onclick="speakWord('costumes')">costumes<span class="tooltip-text">服裝 👗</span></span> with feathers and dance Samba to lively drums.</span>
+                        <span id="s2_3" class="sentence-node">It is the biggest street party in the world!</span>
+                    </p>
+                    <div id="trans2" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-pink-200 font-semibold">
+                        🇨🇳 每年有數百萬人慶祝 <strong>Carnival (嘉年華狂歡節)</strong>。舞者穿著帶有羽毛的色彩鮮艷服裝，隨著輕快的鼓聲跳桑巴舞。這是全球最大的街頭派對！
+                    </div>
+                    <button onclick="toggleTrans('trans2')" class="text-xs font-bold text-pink-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 3: Football -->
+                <div class="p-4 bg-yellow-50/70 rounded-2xl border border-yellow-300 space-y-2 hover:border-yellow-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-yellow-900 bg-yellow-200 px-2.5 py-0.5 rounded-full">Part 3 ⚽ National Sport 足球運動</span>
+                        <button onclick="speakSentence('s3')" class="text-yellow-800 bg-yellow-200 hover:bg-yellow-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s3_1" class="sentence-node">Brazil is also crazy about <span class="tag-football" onclick="speakWord('Football')">⚽ Football</span>!</span>
+                        <span id="s3_2" class="sentence-node">Kids and adults play on the beach, in streets, and in giant <span class="vocab-tooltip" onclick="speakWord('stadiums')">stadiums<span class="tooltip-text">體育場 🏟️</span></span>.</span>
+                        <span id="s3_3" class="sentence-node">Brazil has won the World Cup five times!</span>
+                    </p>
+                    <div id="trans3" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-yellow-300 font-semibold">
+                        🇨🇳 巴西也對 <strong>Football (足球)</strong> 極度狂熱！小孩和大人在海灘上、街道上和巨大的體育場裡踢球。巴西曾獲得五次世界盃冠軍！
+                    </div>
+                    <button onclick="toggleTrans('trans3')" class="text-xs font-bold text-yellow-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 4: Summary -->
+                <div class="p-4 bg-blue-50/70 rounded-2xl border border-blue-200 space-y-2 hover:border-blue-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-blue-900 bg-blue-200 px-2.5 py-0.5 rounded-full">Part 4 ✨ Fun Summary 快樂結語</span>
+                        <button onclick="speakSentence('s4')" class="text-brazil-blue bg-blue-200 hover:bg-blue-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s4_1" class="sentence-node"><span class="tag-carnival" onclick="speakWord('Carnival')">🎭 Carnival</span> and <span class="tag-football" onclick="speakWord('Football')">⚽ Football</span> fill Brazil with music, joy, and energy.</span>
+                        <span id="s4_2" class="sentence-node">Welcome to join the celebration in Brazil!</span>
+                    </p>
+                    <div id="trans4" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-blue-200 font-semibold">
+                        🇨🇳 <strong>Carnival</strong> 與 <strong>Football</strong> 讓巴西充滿了音樂、歡樂與活力。歡迎來到巴西加入這場盛大的慶典！
+                    </div>
+                    <button onclick="toggleTrans('trans4')" class="text-xs font-bold text-blue-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Visual Picture Flashcards -->
+        <section class="bg-white p-6 rounded-3xl shadow-lg border-2 border-brazil-yellow space-y-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-brazil-yellow rounded-2xl flex items-center justify-center text-green-950 font-bold text-xl shadow-sm">
+                    🖼️
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-gray-800">Visual Picture Cards 視覺圖解單字</h3>
+                    <p class="text-xs text-gray-500 font-bold">Tap card to hear audio & read Traditional Chinese!</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                <div onclick="speakWord('Brazil')" class="bg-green-50 border-2 border-green-300 hover:border-green-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🇧🇷</div>
+                    <h4 class="font-black text-green-900 text-sm">Brazil</h4>
+                    <p class="text-xs text-green-700 font-bold">巴西</p>
+                </div>
+                <div onclick="speakWord('Carnival')" class="bg-pink-50 border-2 border-pink-300 hover:border-pink-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🎭</div>
+                    <h4 class="font-black text-pink-900 text-sm">Carnival</h4>
+                    <p class="text-xs text-pink-700 font-bold">狂歡節</p>
+                </div>
+                <div onclick="speakWord('Costume')" class="bg-purple-50 border-2 border-purple-300 hover:border-purple-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">👗</div>
+                    <h4 class="font-black text-purple-900 text-sm">Costume</h4>
+                    <p class="text-xs text-purple-700 font-bold">表演服裝</p>
+                </div>
+                <div onclick="speakWord('Dance')" class="bg-rose-50 border-2 border-rose-300 hover:border-rose-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">💃</div>
+                    <h4 class="font-black text-rose-900 text-sm">Dance</h4>
+                    <p class="text-xs text-rose-700 font-bold">舞蹈 (桑巴)</p>
+                </div>
+                <div onclick="speakWord('Football')" class="bg-yellow-50 border-2 border-yellow-400 hover:border-yellow-600 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">⚽</div>
+                    <h4 class="font-black text-yellow-900 text-sm">Football</h4>
+                    <p class="text-xs text-yellow-700 font-bold">足球</p>
+                </div>
+                <div onclick="speakWord('Stadium')" class="bg-blue-50 border-2 border-blue-300 hover:border-blue-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm col-span-2 sm:col-span-1">
+                    <div class="text-3xl mb-1">🏟️</div>
+                    <h4 class="font-black text-blue-900 text-sm">Stadium</h4>
+                    <p class="text-xs text-blue-700 font-bold">體育場</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Comprehension Quiz -->
+        <section class="bg-gradient-to-br from-brazil-darkblue via-brazil-blue to-brazil-darkgreen p-6 md:p-8 rounded-3xl text-white shadow-xl space-y-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-brazil-yellow rounded-2xl flex items-center justify-center text-green-950 font-bold text-2xl shadow-md">
+                    ⭐
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-brazil-yellow">Short Quiz 閱讀理解小測驗</h3>
+                    <p class="text-xs text-green-100 font-bold">Tap the correct answer for all 4 questions!</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-gray-800" id="quizContainer">
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        1. What do dancers wear during <span class="tag-carnival text-xs">🎭 Carnival</span>? <span class="text-xs font-normal text-gray-500">(狂歡節期間舞者穿什麼？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 1, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left">A) Colorful costumes with feathers (有羽毛的繽紛服裝) 👗</button>
+                        <button onclick="checkAnswer(this, 1, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left">B) Winter coats and boots (冬天大衣與靴子) 🧥</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        2. How many times has Brazil won the World Cup in <span class="tag-football text-xs">⚽ Football</span>? <span class="text-xs font-normal text-gray-500">(巴西贏過幾次足球世界盃？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 2, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left">A) Two times (兩次) 🥈</button>
+                        <button onclick="checkAnswer(this, 2, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left">B) Five times (五次) 🏆</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        3. What dance style is famous during Carnival? <span class="text-xs font-normal text-gray-500">(狂歡節期間最著名的舞蹈是？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 3, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left">A) Samba dance (桑巴舞) 💃</button>
+                        <button onclick="checkAnswer(this, 3, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left">B) Ice skating (滑冰) ⛸️</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        4. Where do people play <span class="tag-football text-xs">⚽ Football</span> in Brazil? <span class="text-xs font-normal text-gray-500">(巴西人在哪裡踢足球？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 4, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left">A) On beaches, streets, and stadiums (海灘、街道與體育場) 🏖️</button>
+                        <button onclick="checkAnswer(this, 4, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left">B) Inside libraries (圖書館裡面) 📚</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Result -->
+            <div id="quizResult" class="hidden bg-brazil-yellow text-green-950 p-6 rounded-2xl text-center space-y-2 shadow-xl animate-bounce">
+                <div class="text-4xl">🌟 🏆 🇧🇷</div>
+                <h4 class="text-2xl font-black">¡Muito Bem! 太棒了！</h4>
+                <p id="scoreText" class="text-lg font-extrabold">You got 4 / 4 correct!</p>
+                <button onclick="resetQuiz()" class="mt-2 bg-brazil-darkblue hover:bg-black text-white font-black text-xs px-5 py-2.5 rounded-xl shadow transition">
+                    Play Again 重新答題
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brazil-darkblue text-gray-300 py-4 text-center text-xs border-t-4 border-brazil-yellow">
+        <p>🇧🇷 Discover Brazil EFL Visual Reader | Grade 6 A0/A1 Level Learning Tool</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const synth = window.speechSynthesis;
+        let currentRate = 1.0;
+        let femaleUSVoice = null;
+
+        /**
+         * SANITIZATION FUNCTION:
+         * Strips all emojis and pictographs so Web Speech API never speaks emoji descriptions.
+         */
+        function cleanTextForSpeech(text) {
+            if (!text) return "";
+            return text
+                // Standard Emoji ranges & symbols
+                .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2300}-\u{23FF}\u{2B50}\u{2B55}]/gu, '')
+                // Extra special characters or UI indicators
+                .replace(/[⭐🎬🏀🎥🌟📣🌎🍲🏊😴📸🪄🧙‍♂️☎️📞🛣️🎭⚽👗💃🏟️🏆🎉🏖️]/g, '')
+                .trim();
+        }
+
+        // Voice Filter for Female Standard American (US) Accent
+        function loadFemaleUSVoice() {
+            if (!synth) return;
+            const voices = synth.getVoices();
+            const femaleUSKeywords = ['samantha', 'zira', 'victoria', 'google us english', 'jenny', 'aria', 'ava', 'kendra', 'allison', 'susan', 'michelle', 'female'];
+
+            femaleUSVoice = voices.find(v => 
+                (v.lang === 'en-US' || v.lang === 'en_US') && 
+                femaleUSKeywords.some(keyword => v.name.toLowerCase().includes(keyword))
+            );
+
+            if (!femaleUSVoice) {
+                femaleUSVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US');
+            }
+
+            if (!femaleUSVoice) {
+                femaleUSVoice = voices.find(v => 
+                    v.lang.startsWith('en') && 
+                    femaleUSKeywords.some(keyword => v.name.toLowerCase().includes(keyword))
+                );
+            }
+
+            if (!femaleUSVoice && voices.length > 0) {
+                femaleUSVoice = voices[0];
+            }
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadFemaleUSVoice;
+        }
+        loadFemaleUSVoice();
+
+        // Web Audio API Sound Effects synth for Quiz
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(164.81, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                }
+            } catch (e) {
+                console.log('Audio Context error:', e);
+            }
+        }
+
+        const sentences = [
+            { id: "s1_1", text: "Brazil is a big and warm country in South America." },
+            { id: "s1_2", text: "It is famous for the Amazon rainforest, sunny beaches, and happy people!" },
+            { id: "s2_1", text: "Every year, millions of people celebrate Carnival." },
+            { id: "s2_2", text: "Dancers wear colorful costumes with feathers and dance Samba to lively drums." },
+            { id: "s2_3", text: "It is the biggest street party in the world!" },
+            { id: "s3_1", text: "Brazil is also crazy about Football!" },
+            { id: "s3_2", text: "Kids and adults play on the beach, in streets, and in giant stadiums." },
+            { id: "s3_3", text: "Brazil has won the World Cup five times!" },
+            { id: "s4_1", text: "Carnival and Football fill Brazil with music, joy, and energy." },
+            { id: "s4_2", text: "Welcome to join the celebration in Brazil!" }
+        ];
+
+        function toggleSpeed() {
+            if (currentRate === 1.0) {
+                currentRate = 0.75;
+                document.getElementById('speedVal').innerText = "0.75x (Slow)";
+            } else {
+                currentRate = 1.0;
+                document.getElementById('speedVal').innerText = "1.0x (Normal)";
+            }
+        }
+
+        function configureUtterance(rawText) {
+            // Clean text before creating utterance
+            const cleanedText = cleanTextForSpeech(rawText);
+            const utter = new SpeechSynthesisUtterance(cleanedText);
+            utter.rate = currentRate;
+            utter.lang = 'en-US';
+            if (femaleUSVoice) {
+                utter.voice = femaleUSVoice;
+            }
+            return utter;
+        }
+
+        function speakWord(word) {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            const utter = configureUtterance(word);
+            synth.speak(utter);
+        }
+
+        function speakSentence(partId) {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            const sentenceNodes = document.querySelectorAll(`[id^="${partId}_"]`);
+            let rawPartText = "";
+            sentenceNodes.forEach(node => {
+                rawPartText += node.innerText + " ";
+                node.classList.add('sentence-active');
+            });
+
+            const utter = configureUtterance(rawPartText);
+            utter.onend = () => clearHighlights();
+            synth.speak(utter);
+        }
+
+        function readFullArticle() {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            let index = 0;
+
+            function playNext() {
+                if (index >= sentences.length) {
+                    clearHighlights();
+                    return;
+                }
+
+                clearHighlights();
+                const current = sentences[index];
+                const node = document.getElementById(current.id);
+                if (node) node.classList.add('sentence-active');
+
+                const utter = configureUtterance(current.text);
+                
+                utter.onend = () => {
+                    index++;
+                    playNext();
+                };
+
+                synth.speak(utter);
+            }
+
+            playNext();
+        }
+
+        function stopSpeech() {
+            if (synth) synth.cancel();
+            clearHighlights();
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.sentence-node').forEach(el => {
+                el.classList.remove('sentence-active');
+            });
+        }
+
+        function toggleTrans(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        let allShow = false;
+        function toggleAllChinese() {
+            allShow = !allShow;
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`trans${i}`);
+                if (el) {
+                    if (allShow) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                }
+            }
+            document.getElementById('toggleAllBtnText').innerText = allShow ? "Hide Chinese 隱藏中文" : "Show Chinese 顯示中文";
+        }
+
+        let answeredCount = 0;
+        let score = 0;
+
+        function checkAnswer(btn, qNum, isCorrect) {
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('.q-btn');
+
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.className = "q-btn border-2 border-gray-200 p-3 rounded-xl text-left opacity-60";
+            });
+
+            if (isCorrect) {
+                btn.className = "q-btn border-2 border-green-500 bg-green-100 text-green-900 font-black p-3 rounded-xl text-left";
+                btn.innerHTML += " ✓ Correct!";
+                score++;
+                playSound('correct');
+                confetti({ particleCount: 35, spread: 65, origin: { y: 0.8 } });
+            } else {
+                btn.className = "q-btn border-2 border-red-400 bg-red-100 text-red-900 font-black p-3 rounded-xl text-left";
+                btn.innerHTML += " ✗ Try again next time";
+                playSound('incorrect');
+            }
+
+            answeredCount++;
+            if (answeredCount === 4) {
+                setTimeout(() => {
+                    document.getElementById('quizResult').classList.remove('hidden');
+                    document.getElementById('scoreText').innerText = `You scored ${score} / 4! 🎉`;
+                }, 500);
+            }
+        }
+
+        function resetQuiz() {
+            answeredCount = 0;
+            score = 0;
+            document.getElementById('quizResult').classList.add('hidden');
+            
+            const buttons = document.querySelectorAll('.q-btn');
+            buttons.forEach(b => {
+                b.disabled = false;
+                b.className = "q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-green-50 text-left";
+                b.innerHTML = b.innerHTML.replace(" ✓ Correct!", "").replace(" ✗ Try again next time", "");
+            });
+        }
+    </script>
+</body>
+</html>

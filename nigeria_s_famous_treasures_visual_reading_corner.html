@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigeria's Famous Treasures: Jollof Rice & Afrobeats</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ng-green': '#008751',
+                        'ng-darkgreen': '#005C37',
+                        'ng-gold': '#FFB800',
+                        'ng-orange': '#FF5722',
+                        'ng-purple': '#8E24AA',
+                        'ng-pink': '#E91E63',
+                        'ng-cream': '#FFFDF5'
+                    },
+                    fontFamily: {
+                        'heading': ['Fredoka', 'sans-serif'],
+                        'body': ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #FFFDF5;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Color-coded tags */
+        .tag-jollof {
+            background-color: #FFEDE8;
+            color: #D83A00;
+            border: 2px solid #FF5722;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 6px rgba(255,87,34,0.15);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .tag-jollof:hover {
+            transform: scale(1.05);
+        }
+
+        .tag-afrobeats {
+            background-color: #F3E5F5;
+            color: #6A1B9A;
+            border: 2px solid #8E24AA;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 6px rgba(142,36,170,0.15);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .tag-afrobeats:hover {
+            transform: scale(1.05);
+        }
+
+        /* Sentence highlighting during audio play */
+        .sentence-active {
+            background-color: #FEF08A !important;
+            border-radius: 6px;
+            padding: 2px 4px;
+            box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+            transition: all 0.2s ease;
+        }
+
+        /* Tooltip style */
+        .vocab-tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px dashed #008751;
+            color: #005C37;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .vocab-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 160px;
+            background-color: #1F2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 6px 8px;
+            position: absolute;
+            z-index: 30;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .vocab-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .bounce-slow {
+            animation: bounceSlow 2s infinite;
+        }
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Navigation / Top Banner -->
+    <header class="bg-gradient-to-r from-ng-darkgreen via-ng-green to-emerald-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl bounce-slow">🇳🇬</span>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-wide text-ng-gold">Discover Nigeria! 尼日利亞</h1>
+                    <p class="text-xs md:text-sm text-emerald-100 font-bold">Grade 6 EFL Visual Reading Experience (A0/A1 Level)</p>
+                </div>
+            </div>
+            
+            <!-- Quick Audio Speed & Stop Controls -->
+            <div class="flex items-center space-x-2 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
+                <button onclick="toggleSpeed()" id="speedBtn" class="bg-ng-gold text-amber-950 font-bold text-xs px-3 py-1 rounded-full hover:bg-yellow-300 transition shadow">
+                    ⚡ Speed: <span id="speedVal">1.0x</span>
+                </button>
+                <button onclick="stopSpeech()" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold transition shadow flex items-center space-x-1">
+                    <i class="fas fa-stop"></i> <span>Stop 停止</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow space-y-8">
+
+        <!-- Visual Cue Spotlight Cards -->
+        <section class="bg-gradient-to-br from-amber-100 via-orange-50 to-purple-100 p-6 rounded-3xl border-2 border-amber-300 shadow-md space-y-4">
+            <div class="text-center space-y-1">
+                <span class="bg-ng-gold text-amber-950 text-xs font-black uppercase px-3 py-1 rounded-full shadow-sm">Target Vocabulary 重點詞彙</span>
+                <h2 class="text-2xl font-black text-gray-800">Two Famous Treasures in Nigeria!</h2>
+                <p class="text-xs md:text-sm text-gray-600 font-semibold">Tap any card or button 🔊 to hear correct English pronunciation!</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <!-- Card 1: Jollof Rice -->
+                <div onclick="speakWord('Jollof Rice')" class="bg-white p-4 rounded-2xl border-2 border-ng-orange shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-orange-100 border-2 border-ng-orange rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition">
+                            🍚
+                        </div>
+                        <div>
+                            <span class="tag-jollof text-lg">
+                                🍚 Jollof Rice
+                            </span>
+                            <p class="text-xs text-gray-600 font-bold mt-1">朱洛夫飯 (非洲香料飯)</p>
+                            <span class="inline-block text-[10px] bg-orange-100 text-orange-900 font-bold px-2 py-0.5 rounded mt-0.5">Spicy Rice Dish 🌶️</span>
+                        </div>
+                    </div>
+                    <button class="w-12 h-12 bg-ng-orange group-hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md text-xl transition">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+
+                <!-- Card 2: Afrobeats -->
+                <div onclick="speakWord('Afrobeats')" class="bg-white p-4 rounded-2xl border-2 border-ng-purple shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-purple-100 border-2 border-ng-purple rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition">
+                            🎵
+                        </div>
+                        <div>
+                            <span class="tag-afrobeats text-lg">
+                                🎵 Afrobeats
+                            </span>
+                            <p class="text-xs text-gray-600 font-bold mt-1">非洲拍子音樂 (流行樂風)</p>
+                            <span class="inline-block text-[10px] bg-purple-100 text-purple-900 font-bold px-2 py-0.5 rounded mt-0.5">Happy Dance Music 💃</span>
+                        </div>
+                    </div>
+                    <button class="w-12 h-12 bg-ng-purple group-hover:bg-purple-800 text-white rounded-full flex items-center justify-center shadow-md text-xl transition">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Short Reading Article -->
+        <section class="bg-white rounded-3xl shadow-xl border-2 border-emerald-200 overflow-hidden">
+            <!-- Article Header -->
+            <div class="bg-gradient-to-r from-ng-darkgreen via-ng-green to-emerald-700 p-5 text-white flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <span class="bg-ng-gold text-amber-950 font-black text-xs px-3 py-1 rounded-full uppercase">Short Story 簡短文章</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-amber-300 mt-1">Nigeria's Treasures 尼日利亞的寶藏</h2>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="readFullArticle()" class="bg-ng-gold hover:bg-yellow-300 text-amber-950 font-black px-4 py-2 rounded-xl shadow-md flex items-center space-x-2 transition transform active:scale-95 text-sm">
+                        <i class="fas fa-play-circle text-lg"></i>
+                        <span>Read Full Story 朗讀全文</span>
+                    </button>
+                    <button onclick="toggleAllChinese()" class="bg-white/20 hover:bg-white/30 text-white font-bold px-3 py-2 rounded-xl border border-white/30 text-xs transition">
+                        <i class="fas fa-language text-base"></i> <span id="toggleAllBtnText">Show Chinese 顯示中文</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reading Paragraphs -->
+            <div class="p-5 md:p-8 space-y-6 text-base md:text-lg leading-relaxed">
+
+                <!-- Sentence 1 -->
+                <div class="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-200 space-y-2 hover:border-emerald-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-emerald-800 bg-emerald-200 px-2.5 py-0.5 rounded-full">Part 1 📍 Country 國家</span>
+                        <button onclick="speakSentence('s1')" class="text-ng-darkgreen bg-emerald-200 hover:bg-emerald-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s1_1" class="sentence-node">Nigeria is a colorful country in <span class="vocab-tooltip" onclick="speakWord('West Africa')">West Africa<span class="tooltip-text">西非 🌍</span></span>.</span>
+                        <span id="s1_2" class="sentence-node">People love food and music!</span>
+                    </p>
+                    <div id="trans1" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-emerald-200 font-semibold">
+                        🇨🇳 尼日利亞是西非一個色彩繽紛的國家。那裡的人們熱愛美食與音樂！
+                    </div>
+                    <button onclick="toggleTrans('trans1')" class="text-xs font-bold text-emerald-700 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 2 (Jollof Rice Focus) -->
+                <div class="p-4 bg-orange-50/60 rounded-2xl border border-orange-200 space-y-2 hover:border-orange-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-orange-800 bg-orange-200 px-2.5 py-0.5 rounded-full">Part 2 🍲 Famous Food 著名美食</span>
+                        <button onclick="speakSentence('s2')" class="text-ng-orange bg-orange-200 hover:bg-orange-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s2_1" class="sentence-node">One famous food is <span class="tag-jollof" onclick="speakWord('Jollof Rice')">🍚 Jollof Rice</span>.</span>
+                        <span id="s2_2" class="sentence-node">It is red, <span class="vocab-tooltip" onclick="speakWord('spicy')">spicy<span class="tooltip-text">香辣的 🌶️</span></span>, and yummy.</span>
+                        <span id="s2_3" class="sentence-node">People eat it at big parties!</span>
+                    </p>
+                    <div id="trans2" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-orange-200 font-semibold">
+                        🇨🇳 一道著名的食物是 <strong>Jollof Rice (朱洛夫飯)</strong>。它是紅色的、香辣又好吃。人們會在大型派對上吃它！
+                    </div>
+                    <button onclick="toggleTrans('trans2')" class="text-xs font-bold text-orange-700 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 3 (Afrobeats Focus) -->
+                <div class="p-4 bg-purple-50/60 rounded-2xl border border-purple-200 space-y-2 hover:border-purple-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-purple-800 bg-purple-200 px-2.5 py-0.5 rounded-full">Part 3 🎵 Famous Music 著名音樂</span>
+                        <button onclick="speakSentence('s3')" class="text-ng-purple bg-purple-200 hover:bg-purple-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s3_1" class="sentence-node">Another famous thing is <span class="tag-afrobeats" onclick="speakWord('Afrobeats')">🎵 Afrobeats</span> music.</span>
+                        <span id="s3_2" class="sentence-node">It has fast drums and happy <span class="vocab-tooltip" onclick="speakWord('rhythms')">rhythms<span class="tooltip-text">節奏 🥁</span></span>.</span>
+                        <span id="s3_3" class="sentence-node">It makes everyone want to <span class="vocab-tooltip" onclick="speakWord('dance')">dance<span class="tooltip-text">跳舞 💃</span></span>!</span>
+                    </p>
+                    <div id="trans3" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-purple-200 font-semibold">
+                        🇨🇳 另一個聞名的事物是 <strong>Afrobeats (非洲拍子音樂)</strong>。它有快速的鼓聲和歡快的節奏。它讓每個人都想跳舞！
+                    </div>
+                    <button onclick="toggleTrans('trans3')" class="text-xs font-bold text-purple-700 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 4 (Summary) -->
+                <div class="p-4 bg-yellow-50/60 rounded-2xl border border-yellow-200 space-y-2 hover:border-yellow-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-amber-800 bg-yellow-200 px-2.5 py-0.5 rounded-full">Part 4 ✨ Fun Summary 快樂結語</span>
+                        <button onclick="speakSentence('s4')" class="text-amber-800 bg-yellow-200 hover:bg-yellow-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s4_1" class="sentence-node"><span class="tag-jollof" onclick="speakWord('Jollof Rice')">🍚 Jollof Rice</span> and <span class="tag-afrobeats" onclick="speakWord('Afrobeats')">🎵 Afrobeats</span> bring joy!</span>
+                        <span id="s4_2" class="sentence-node">Nigeria is full of fun!</span>
+                    </p>
+                    <div id="trans4" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-yellow-200 font-semibold">
+                        🇨🇳 <strong>Jollof Rice</strong> 和 <strong>Afrobeats</strong> 帶來歡樂！尼日利亞充滿樂趣！
+                    </div>
+                    <button onclick="toggleTrans('trans4')" class="text-xs font-bold text-amber-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Visual Picture Flashcards Deck -->
+        <section class="bg-white p-6 rounded-3xl shadow-lg border-2 border-ng-gold space-y-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-ng-gold rounded-2xl flex items-center justify-center text-amber-950 font-bold text-xl shadow-sm">
+                    🖼️
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-gray-800">Visual Picture Cards 視覺圖解單字</h3>
+                    <p class="text-xs text-gray-500 font-bold">Tap card to hear sound & learn Chinese!</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                <!-- Flashcard 1 -->
+                <div onclick="speakWord('Nigeria')" class="bg-emerald-50 border-2 border-emerald-300 hover:border-emerald-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🇳🇬</div>
+                    <h4 class="font-black text-emerald-900 text-sm">Nigeria</h4>
+                    <p class="text-xs text-emerald-700 font-bold">尼日利亞</p>
+                </div>
+                <!-- Flashcard 2 -->
+                <div onclick="speakWord('Spicy')" class="bg-orange-50 border-2 border-orange-300 hover:border-orange-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🌶️</div>
+                    <h4 class="font-black text-orange-900 text-sm">Spicy</h4>
+                    <p class="text-xs text-orange-700 font-bold">香辣的</p>
+                </div>
+                <!-- Flashcard 3 -->
+                <div onclick="speakWord('Drums')" class="bg-purple-50 border-2 border-purple-300 hover:border-purple-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🥁</div>
+                    <h4 class="font-black text-purple-900 text-sm">Drums</h4>
+                    <p class="text-xs text-purple-700 font-bold">鼓聲</p>
+                </div>
+                <!-- Flashcard 4 -->
+                <div onclick="speakWord('Dance')" class="bg-pink-50 border-2 border-pink-300 hover:border-pink-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">💃</div>
+                    <h4 class="font-black text-pink-900 text-sm">Dance</h4>
+                    <p class="text-xs text-pink-700 font-bold">跳舞</p>
+                </div>
+                <!-- Flashcard 5 -->
+                <div onclick="speakWord('Party')" class="bg-yellow-50 border-2 border-yellow-300 hover:border-yellow-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm col-span-2 sm:col-span-1">
+                    <div class="text-3xl mb-1">🎉</div>
+                    <h4 class="font-black text-yellow-900 text-sm">Party</h4>
+                    <p class="text-xs text-yellow-700 font-bold">派對</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Comprehension Quiz -->
+        <section class="bg-gradient-to-br from-ng-darkgreen to-emerald-900 p-6 md:p-8 rounded-3xl text-white shadow-xl space-y-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-ng-gold rounded-2xl flex items-center justify-center text-amber-950 font-bold text-2xl shadow-md">
+                    ⭐
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-ng-gold">Short Quiz 閱讀理解小測驗</h3>
+                    <p class="text-xs text-emerald-100 font-bold">Tap the correct answer for each question!</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-gray-800" id="quizContainer">
+
+                <!-- Q1 -->
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        1. What color is <span class="tag-jollof text-xs">🍚 Jollof Rice</span>? <span class="text-xs font-normal text-gray-500">(Jollof Rice 是什麼顏色？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 1, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-emerald-50 text-left">A) Blue (藍色) 🔵</button>
+                        <button onclick="checkAnswer(this, 1, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-emerald-50 text-left">B) Red (紅色) 🔴</button>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        2. What is <span class="tag-afrobeats text-xs">🎵 Afrobeats</span>? <span class="text-xs font-normal text-gray-500">(Afrobeats 是什麼？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 2, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-emerald-50 text-left">A) Music (音樂) 🎵</button>
+                        <button onclick="checkAnswer(this, 2, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-emerald-50 text-left">B) A game (遊戲) 🎮</button>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        3. What does <span class="tag-afrobeats text-xs">🎵 Afrobeats</span> make people want to do? <span class="text-xs font-normal text-gray-500">(Afrobeats 讓人想做什麼？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 3, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-emerald-50 text-left">A) Sleep (睡覺) 😴</button>
+                        <button onclick="checkAnswer(this, 3, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-emerald-50 text-left">B) Dance (跳舞) 💃</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Quiz Score & Feedback Banner -->
+            <div id="quizResult" class="hidden bg-ng-gold text-amber-950 p-6 rounded-2xl text-center space-y-2 shadow-xl animate-bounce">
+                <div class="text-4xl">🌟 🏆 🌟</div>
+                <h4 class="text-2xl font-black">Super Star Job! 太棒了！</h4>
+                <p id="scoreText" class="text-lg font-extrabold">You got 3 / 3 correct!</p>
+                <button onclick="resetQuiz()" class="mt-2 bg-emerald-800 hover:bg-emerald-900 text-white font-black text-xs px-5 py-2.5 rounded-xl shadow transition">
+                    Play Again 重新答題
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-4 text-center text-xs border-t-4 border-ng-gold">
+        <p>🇳🇬 Discover Nigeria EFL Visual Reader | Grade 6 A0/A1 Level Learning Tool</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const synth = window.speechSynthesis;
+        let currentRate = 1.0;
+        let isReadingAll = false;
+
+        // Sentences structure for guided synchronized reading
+        const sentences = [
+            { id: "s1_1", text: "Nigeria is a colorful country in West Africa." },
+            { id: "s1_2", text: "People love food and music!" },
+            { id: "s2_1", text: "One famous food is Jollof Rice." },
+            { id: "s2_2", text: "It is red, spicy, and yummy." },
+            { id: "s2_3", text: "People eat it at big parties!" },
+            { id: "s3_1", text: "Another famous thing is Afrobeats music." },
+            { id: "s3_2", text: "It has fast drums and happy rhythms." },
+            { id: "s3_3", text: "It makes everyone want to dance!" },
+            { id: "s4_1", text: "Jollof Rice and Afrobeats bring joy!" },
+            { id: "s4_2", text: "Nigeria is full of fun!" }
+        ];
+
+        // Toggle Audio Speed
+        function toggleSpeed() {
+            if (currentRate === 1.0) {
+                currentRate = 0.75;
+                document.getElementById('speedVal').innerText = "0.75x (Slow)";
+            } else {
+                currentRate = 1.0;
+                document.getElementById('speedVal').innerText = "1.0x (Normal)";
+            }
+        }
+
+        // Single Word Audio Trigger
+        function speakWord(word) {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            const utter = new SpeechSynthesisUtterance(word);
+            utter.rate = currentRate;
+            utter.lang = 'en-US';
+            synth.speak(utter);
+        }
+
+        // Sentence Specific Speech
+        function speakSentence(partId) {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            const sentenceNodes = document.querySelectorAll(`[id^="${partId}_"]`);
+            let fullPartText = "";
+            sentenceNodes.forEach(node => {
+                fullPartText += node.innerText + " ";
+                node.classList.add('sentence-active');
+            });
+
+            const utter = new SpeechSynthesisUtterance(fullPartText);
+            utter.rate = currentRate;
+            utter.lang = 'en-US';
+            utter.onend = () => clearHighlights();
+            synth.speak(utter);
+        }
+
+        // Sequential Read Full Article with Realtime Sentence Highlighting
+        function readFullArticle() {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            let index = 0;
+
+            function playNext() {
+                if (index >= sentences.length) {
+                    clearHighlights();
+                    return;
+                }
+
+                clearHighlights();
+                const current = sentences[index];
+                const node = document.getElementById(current.id);
+                if (node) node.classList.add('sentence-active');
+
+                const utter = new SpeechSynthesisUtterance(current.text);
+                utter.rate = currentRate;
+                utter.lang = 'en-US';
+                
+                utter.onend = () => {
+                    index++;
+                    playNext();
+                };
+
+                synth.speak(utter);
+            }
+
+            playNext();
+        }
+
+        // Stop Audio Playback
+        function stopSpeech() {
+            if (synth) synth.cancel();
+            clearHighlights();
+        }
+
+        // Helper to remove active sentence highlights
+        function clearHighlights() {
+            document.querySelectorAll('.sentence-node').forEach(el => {
+                el.classList.remove('sentence-active');
+            });
+        }
+
+        // Chinese Translation Toggle
+        function toggleTrans(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        let allShow = false;
+        function toggleAllChinese() {
+            allShow = !allShow;
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`trans${i}`);
+                if (el) {
+                    if (allShow) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                }
+            }
+            document.getElementById('toggleAllBtnText').innerText = allShow ? "Hide Chinese 隱藏中文" : "Show Chinese 顯示中文";
+        }
+
+        // Quiz Logic
+        let answeredCount = 0;
+        let score = 0;
+
+        function checkAnswer(btn, qNum, isCorrect) {
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('.q-btn');
+
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.className = "q-btn border-2 border-gray-200 p-3 rounded-xl text-left opacity-60";
+            });
+
+            if (isCorrect) {
+                btn.className = "q-btn border-2 border-green-500 bg-green-100 text-green-900 font-black p-3 rounded-xl text-left";
+                btn.innerHTML += " ✓ Correct!";
+                score++;
+                // Confetti trigger
+                confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 } });
+            } else {
+                btn.className = "q-btn border-2 border-red-400 bg-red-100 text-red-900 font-black p-3 rounded-xl text-left";
+                btn.innerHTML += " ✗ Try again next time";
+            }
+
+            answeredCount++;
+            if (answeredCount === 3) {
+                setTimeout(() => {
+                    document.getElementById('quizResult').classList.remove('hidden');
+                    document.getElementById('scoreText').innerText = `You scored ${score} / 3! 🎉`;
+                }, 500);
+            }
+        }
+
+        function resetQuiz() {
+            answeredCount = 0;
+            score = 0;
+            document.getElementById('quizResult').classList.add('hidden');
+            
+            const buttons = document.querySelectorAll('.q-btn');
+            buttons.forEach(b => {
+                b.disabled = false;
+                b.className = "q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-emerald-50 text-left";
+                b.innerHTML = b.innerHTML.replace(" ✓ Correct!", "").replace(" ✗ Try again next time", "");
+            });
+        }
+    </script>
+</body>
+</html>

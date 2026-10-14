@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canada's Treasures: Ice Hockey & Maple Syrup</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        maple: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                        },
+                        ice: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .active-sentence {
+            background-color: #fef08a !important;
+            border-left: 4px solid #e11d48 !important;
+            padding-left: 8px !important;
+            border-radius: 6px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.25s ease-in-out;
+        }
+
+        .active-paragraph {
+            outline: 3px solid #f43f5e;
+            outline-offset: 2px;
+            background-color: #fff1f2;
+        }
+
+        .word-chip {
+            display: inline-block;
+            background-color: #ffe4e6;
+            color: #9f1239;
+            font-weight: 700;
+            padding: 2px 8px;
+            margin: 1px 2px;
+            border-radius: 8px;
+            border: 1px solid #f43f5e;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            user-select: none;
+        }
+        .word-chip:hover, .word-chip:active {
+            transform: translateY(-1px) scale(1.05);
+            background-color: #f43f5e;
+            color: white;
+            box-shadow: 0 2px 8px rgba(244, 63, 94, 0.4);
+        }
+
+        .paragraph-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .paragraph-card:hover {
+            border-color: #fda4af;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-maple-200">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-maple-800 via-maple-700 to-maple-600 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl filter drop-shadow">🇨🇦</span>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black tracking-tight">Canada's Famous Treasures</h1>
+                    <p class="text-xs text-maple-100 font-medium">Grade 6 EFL Reading • 國小六年級雙語英語閱讀</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="toggle-all-trans-btn" onclick="toggleAllTranslations()" class="bg-white/10 hover:bg-white/20 active:scale-95 text-white text-xs md:text-sm px-3 py-1.5 rounded-xl border border-white/30 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-language text-amber-300"></i>
+                    <span id="trans-btn-text">顯示中文對照</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full space-y-8">
+
+        <!-- Banner Card -->
+        <section class="bg-gradient-to-r from-ice-50 via-white to-maple-50 rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-2 text-center md:text-left">
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                    <span class="bg-maple-100 text-maple-800 font-black text-xs uppercase tracking-wider px-3 py-1 rounded-full border border-maple-300">EFL Level A0 / A1</span>
+                    <span class="bg-ice-100 text-ice-700 font-bold text-xs px-3 py-1 rounded-full border border-ice-200"><i class="fa-solid fa-volume-high mr-1"></i>標準美音朗讀</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800">Explore Canada's Culture! 🇨🇦</h2>
+                <p class="text-sm text-slate-600 max-w-lg leading-relaxed">
+                    點擊任何段落卡片即可收聽<b>「段落專屬朗讀」</b>，點擊畫重點單字可觀看<b>繁體中文翻譯與美式發音</b>！
+                </p>
+            </div>
+            <div class="flex gap-3 text-4xl bg-white/80 backdrop-blur p-4 rounded-2xl shadow-inner border border-slate-200">
+                <span class="hover:scale-125 transition transform cursor-pointer" onclick="speakWord('Canada')">🇨🇦</span>
+                <span class="hover:scale-125 transition transform cursor-pointer" onclick="speakWord('Ice Hockey')">🏒</span>
+                <span class="hover:scale-125 transition transform cursor-pointer" onclick="speakWord('Maple Syrup')">🍁</span>
+            </div>
+        </section>
+
+        <!-- Read Aloud Control Bar -->
+        <section class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <button id="main-play-btn" onclick="toggleReadArticle()" class="bg-maple-600 hover:bg-maple-700 active:scale-95 text-white px-5 py-2.5 rounded-xl font-extrabold shadow-md hover:shadow-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-play" id="main-play-icon"></i>
+                    <span id="main-play-text">朗讀全文 (Read All)</span>
+                </button>
+                <button onclick="stopSpeech()" class="bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 border border-slate-200">
+                    <i class="fa-solid fa-stop text-red-500"></i>
+                    <span>停止 (Stop)</span>
+                </button>
+            </div>
+
+            <!-- Speed Toggle Controller -->
+            <div class="flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 flex items-center gap-1">
+                    <i class="fa-solid fa-gauge-high text-maple-600"></i> 語速 (Speed):
+                </span>
+                <div class="flex items-center bg-white rounded-lg p-0.5 border border-slate-200 text-xs font-bold">
+                    <button id="speed-075-btn" onclick="setSpeechRate(0.75)" class="px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition">0.75x</button>
+                    <button id="speed-100-btn" onclick="setSpeechRate(1.0)" class="px-2.5 py-1 rounded-md bg-maple-600 text-white shadow-sm">1.0x</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Article Content -->
+        <article class="space-y-6">
+
+            <!-- Paragraph 1 -->
+            <div class="paragraph-card bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-md transition space-y-4 relative group" id="p1-card" onclick="handleParagraphContainerClick(event, 1)">
+                
+                <!-- Section Visual Cue Header -->
+                <div class="flex items-center justify-between bg-gradient-to-r from-red-600 via-maple-600 to-rose-600 text-white p-3.5 rounded-xl shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl bg-white/20 p-1.5 rounded-lg leading-none">🇨🇦</span>
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-red-100 block">Paragraph 1</span>
+                            <h3 class="text-base md:text-lg font-black">Welcome to Canada! (加拿大大觀)</h3>
+                        </div>
+                    </div>
+                    <button onclick="event.stopPropagation(); playParagraph(1)" class="bg-white/20 hover:bg-white/30 active:scale-95 text-white text-xs md:text-sm font-black px-3.5 py-2 rounded-xl border border-white/30 backdrop-blur transition flex items-center gap-2">
+                        <i class="fa-solid fa-volume-high"></i>
+                        <span>🔊 朗讀本段</span>
+                    </button>
+                </div>
+
+                <!-- Sentences Container -->
+                <div class="space-y-3 text-base md:text-lg text-slate-800 leading-relaxed font-medium">
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s1">
+                            <span class="word-chip" onclick="event.stopPropagation(); openWordModal('Canada')">Canada</span> is a very big country in North America.
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-maple-400 font-normal" id="t1">加拿大是北美洲一個非常大的國家。</p>
+                    </div>
+
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s2">
+                            In winter, it is very <span class="word-chip" onclick="event.stopPropagation(); openWordModal('Cold')">cold</span> and white with snow.
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-maple-400 font-normal" id="t2">在冬天，這裡非常寒冷，到處是一片白雪。</p>
+                    </div>
+
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s3">
+                            Canadian people love outdoor sports and sweet food!
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-maple-400 font-normal" id="t3">加拿大人民非常喜愛戶外運動與美味的甜食！</p>
+                    </div>
+                </div>
+
+                <div class="text-right text-xs text-slate-400 group-hover:text-maple-500 font-medium transition">
+                    <i class="fa-solid fa-hand-pointer mr-1"></i>點擊卡片任何處收聽第一段
+                </div>
+            </div>
+
+            <!-- Paragraph 2 -->
+            <div class="paragraph-card bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-md transition space-y-4 relative group" id="p2-card" onclick="handleParagraphContainerClick(event, 2)">
+                
+                <!-- Section Visual Cue Header -->
+                <div class="flex items-center justify-between bg-gradient-to-r from-sky-600 via-ice-600 to-blue-600 text-white p-3.5 rounded-xl shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl bg-white/20 p-1.5 rounded-lg leading-none">🏒</span>
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-sky-100 block">Paragraph 2</span>
+                            <h3 class="text-base md:text-lg font-black">Ice Hockey & The Rink (冰上曲棍球與滑冰場)</h3>
+                        </div>
+                    </div>
+                    <button onclick="event.stopPropagation(); playParagraph(2)" class="bg-white/20 hover:bg-white/30 active:scale-95 text-white text-xs md:text-sm font-black px-3.5 py-2 rounded-xl border border-white/30 backdrop-blur transition flex items-center gap-2">
+                        <i class="fa-solid fa-volume-high"></i>
+                        <span>🔊 朗讀本段</span>
+                    </button>
+                </div>
+
+                <!-- Sentences Container -->
+                <div class="space-y-3 text-base md:text-lg text-slate-800 leading-relaxed font-medium">
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s4">
+                            <span class="word-chip" onclick="event.stopPropagation(); openWordModal('Ice Hockey')">Ice Hockey</span> is the most popular sport in Canada.
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-sky-400 font-normal" id="t4">冰上曲棍球是加拿大最受歡迎的運動。</p>
+                    </div>
+
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s5">
+                            Players put on ice skates and slide on the frozen <span class="word-chip" onclick="event.stopPropagation(); openWordModal('Rink')">rink</span> very fast.
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-sky-400 font-normal" id="t5">球員穿上滑冰鞋，在冰凍的溜冰場上快速滑行。</p>
+                    </div>
+
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s6">
+                            They use sticks to hit a black puck into the net to score points.
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-sky-400 font-normal" id="t6">他們用球桿將黑色的冰球擊入網中來得分。</p>
+                    </div>
+                </div>
+
+                <div class="text-right text-xs text-slate-400 group-hover:text-ice-600 font-medium transition">
+                    <i class="fa-solid fa-hand-pointer mr-1"></i>點擊卡片任何處收聽第二段
+                </div>
+            </div>
+
+            <!-- Paragraph 3 -->
+            <div class="paragraph-card bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-md transition space-y-4 relative group" id="p3-card" onclick="handleParagraphContainerClick(event, 3)">
+                
+                <!-- Section Visual Cue Header -->
+                <div class="flex items-center justify-between bg-gradient-to-r from-amber-600 via-orange-600 to-maple-700 text-white p-3.5 rounded-xl shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl bg-white/20 p-1.5 rounded-lg leading-none">🍁</span>
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-100 block">Paragraph 3</span>
+                            <h3 class="text-base md:text-lg font-black">Maple Syrup & Sweet Pancakes (楓糖漿與美味鬆餅)</h3>
+                        </div>
+                    </div>
+                    <button onclick="event.stopPropagation(); playParagraph(3)" class="bg-white/20 hover:bg-white/30 active:scale-95 text-white text-xs md:text-sm font-black px-3.5 py-2 rounded-xl border border-white/30 backdrop-blur transition flex items-center gap-2">
+                        <i class="fa-solid fa-volume-high"></i>
+                        <span>🔊 朗讀本段</span>
+                    </button>
+                </div>
+
+                <!-- Sentences Container -->
+                <div class="space-y-3 text-base md:text-lg text-slate-800 leading-relaxed font-medium">
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s7">
+                            Canada is also famous for delicious <span class="word-chip" onclick="event.stopPropagation(); openWordModal('Maple Syrup')">Maple Syrup</span>.
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-amber-400 font-normal" id="t7">加拿大也以美味的楓糖漿而聞名遐邇。</p>
+                    </div>
+
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s8">
+                            People collect sap from maple trees in spring and boil it.
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-amber-400 font-normal" id="t8">人們在春天從楓樹採集樹汁並將其煮沸濃縮。</p>
+                    </div>
+
+                    <div>
+                        <p class="sentence-item py-1 px-1 rounded transition inline" id="s9">
+                            The syrup is very <span class="word-chip" onclick="event.stopPropagation(); openWordModal('Sweet')">sweet</span> and yummy on hot pancakes!
+                        </p>
+                        <p class="translation text-sm text-slate-500 hidden pl-2 mt-1 border-l-2 border-amber-400 font-normal" id="t9">這種糖漿非常甜美，淋在熱氣騰騰的鬆餅上超好吃！</p>
+                    </div>
+                </div>
+
+                <div class="text-right text-xs text-slate-400 group-hover:text-amber-600 font-medium transition">
+                    <i class="fa-solid fa-hand-pointer mr-1"></i>點擊卡片任何處收聽第三段
+                </div>
+            </div>
+
+        </article>
+
+        <!-- Vocabulary Flashcards Section -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-maple-600"></i>
+                    <span>重點單字卡 (Key Vocabulary Flashcards)</span>
+                </h3>
+                <span class="text-xs text-slate-500 font-medium">點擊單字卡收聽發音</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="flashcards-container">
+                <!-- Flashcards rendered via JS -->
+            </div>
+        </section>
+
+        <!-- Comprehension Quiz -->
+        <section class="bg-white rounded-2xl p-6 md:p-8 border border-slate-200 shadow-md space-y-6">
+            <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-question text-maple-600"></i>
+                        <span>閱讀理解小測驗 (Comprehension Quiz)</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-1">選出正確的答案以測試你的閱讀理解力！</p>
+                </div>
+                <div id="quiz-score-badge" class="bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-full text-xs border border-slate-200">
+                    得分: 0 / 4
+                </div>
+            </div>
+
+            <div id="quiz-container" class="space-y-6">
+                <!-- Quiz items rendered via JS -->
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 flex justify-end">
+                <button onclick="checkQuizResults()" class="bg-maple-600 hover:bg-maple-700 active:scale-95 text-white font-black px-6 py-3 rounded-xl shadow-md transition flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>提交答案 (Submit Answers)</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300 py-6 border-t border-slate-700 text-center text-xs space-y-1">
+        <p class="font-semibold">🇨🇦 Grade 6 EFL English Learning App • Canada Famous Treasures</p>
+        <p class="text-slate-400">Features Standard US Female Speech Synthesis & Audio Phonetic Override Controller</p>
+    </footer>
+
+    <!-- Word Detail Popover Modal -->
+    <div id="word-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 relative space-y-5 animate-in fade-in zoom-in duration-150">
+            <button onclick="closeWordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center space-y-1">
+                <span id="modal-emoji" class="text-6xl block my-1 drop-shadow-sm">🇨🇦</span>
+                <h3 id="modal-word" class="text-2xl font-black text-slate-800">Canada</h3>
+                <p id="modal-ipa" class="text-xs font-mono font-bold text-maple-600 bg-maple-50 px-2.5 py-1 rounded-md inline-block border border-maple-200">/ˈkæn.ə.də/</p>
+            </div>
+
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 space-y-1">
+                <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">繁體中文說明 (Traditional Chinese)</span>
+                <p id="modal-chinese" class="text-lg font-black text-slate-800">加拿大</p>
+                <p id="modal-explain" class="text-xs text-slate-600 leading-relaxed font-medium"></p>
+            </div>
+
+            <div class="bg-amber-50 p-3 rounded-2xl border border-amber-100 space-y-1">
+                <span class="text-[10px] font-black uppercase tracking-wider text-amber-600 block">例句 (Example Sentence)</span>
+                <p id="modal-sentence" class="text-xs text-slate-700 italic font-medium"></p>
+            </div>
+
+            <button id="modal-audio-btn" onclick="speakCurrentModalWord()" class="w-full bg-maple-600 hover:bg-maple-700 active:scale-95 text-white font-extrabold py-3.5 rounded-2xl shadow-md flex items-center justify-center gap-2 transition">
+                <i class="fa-solid fa-volume-high text-lg"></i>
+                <span>播放美音發音 (Listen - Standard US)</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* Vocabulary Database with IPA, Phonetic Overrides, and Traditional Chinese */
+        const VOCAB_DATA = {
+            "Canada": {
+                word: "Canada",
+                ipa: "/ˈkæn.ə.də/",
+                chinese: "加拿大",
+                explain: "位於北美洲的國家，以美麗雪景與楓葉聞名。",
+                sentence: "Canada is a very big and beautiful country.",
+                emoji: "🇨🇦",
+                speechText: "Canada"
+            },
+            "Ice Hockey": {
+                word: "Ice Hockey",
+                ipa: "/ˈaɪs ˌhɑː.ki/",
+                chinese: "冰上曲棍球",
+                explain: "加拿大最熱門的國家體育運動，在冰上進行。",
+                sentence: "Ice hockey is fast and exciting to watch.",
+                emoji: "🏒",
+                speechText: "ICE HAH-kee"
+            },
+            "Maple Syrup": {
+                word: "Maple Syrup",
+                ipa: "/ˈmeɪ.pəl ˈsɪr.əp/",
+                chinese: "楓糖漿",
+                explain: "由楓樹樹汁熬煮而成的甜美金黃糖漿。",
+                sentence: "Maple syrup tastes great on hot pancakes.",
+                emoji: "🍁",
+                speechText: "MAY-puhl SEER-up"
+            },
+            "Rink": {
+                word: "Rink",
+                ipa: "/rɪŋk/",
+                chinese: "冰上曲棍球場 / 滑冰場",
+                explain: "專門用來滑冰或進行冰上曲棍球比賽的冰場。",
+                sentence: "The players are skating fast on the rink.",
+                emoji: "⛸️",
+                speechText: "rink"
+            },
+            "Sweet": {
+                word: "Sweet",
+                ipa: "/swiːt/",
+                chinese: "甜的 / 美味可口的",
+                explain: "描述像糖或楓糖漿一樣甜蜜的味道。",
+                sentence: "The syrup is very sweet and tasty.",
+                emoji: "🍬",
+                speechText: "sweet"
+            },
+            "Cold": {
+                word: "Cold",
+                ipa: "/koʊld/",
+                chinese: "寒冷的 / 冰涼的",
+                explain: "溫度很低，描述加拿大的冬天氣候。",
+                sentence: "Canada is cold and snowy in winter.",
+                emoji: "❄️",
+                speechText: "cold"
+            }
+        };
+
+        const FLASHCARD_KEYS = ["Ice Hockey", "Maple Syrup", "Rink", "Sweet", "Cold"];
+
+        const PARAGRAPHS = [
+            {
+                num: 1,
+                sentences: [
+                    { id: "s1", text: "Canada is a very big country in North America." },
+                    { id: "s2", text: "In winter, it is very cold and white with snow." },
+                    { id: "s3", text: "Canadian people love outdoor sports and sweet food!" }
+                ]
+            },
+            {
+                num: 2,
+                sentences: [
+                    { id: "s4", text: "Ice Hockey is the most popular sport in Canada." },
+                    { id: "s5", text: "Players put on ice skates and slide on the frozen rink very fast." },
+                    { id: "s6", text: "They use sticks to hit a black puck into the net to score points." }
+                ]
+            },
+            {
+                num: 3,
+                sentences: [
+                    { id: "s7", text: "Canada is also famous for delicious Maple Syrup." },
+                    { id: "s8", text: "People collect sap from maple trees in spring and boil it." },
+                    { id: "s9", text: "The syrup is very sweet and yummy on hot pancakes!" }
+                ]
+            }
+        ];
+
+        const ALL_SENTENCES = PARAGRAPHS.flatMap(p => p.sentences);
+
+        const QUIZ_DATA = [
+            {
+                id: 1,
+                question: "Where is Canada located? (加拿大位在哪裡？)",
+                options: ["Asia (亞洲)", "North America (北美洲)", "Europe (歐洲)", "Africa (非洲)"],
+                correct: 1
+            },
+            {
+                id: 2,
+                question: "What is the most popular sport in Canada? (加拿大最受歡迎的運動是什麼？)",
+                options: ["Basketball (籃球)", "Soccer (足球)", "Ice Hockey (冰上曲棍球)", "Tennis (網球)"],
+                correct: 2
+            },
+            {
+                id: 3,
+                question: "What do Canadian trees give us in spring? (春天的楓樹提供我們什麼？)",
+                options: ["Maple sap for syrup (做糖漿的楓樹汁)", "Fresh apples (新鮮蘋果)", "Ice cream (冰淇淋)", "Hot chocolate (熱可可)"],
+                correct: 0
+            },
+            {
+                id: 4,
+                question: "How do people usually eat maple syrup? (人們通常如何享用楓糖漿？)",
+                options: ["With ice skates (搭配冰鞋)", "On hot pancakes (淋在熱鬆餅上)", "In the hockey rink (在冰場裡)", "With soup (加在湯裡)"],
+                correct: 1
+            }
+        ];
+
+        let synth = window.speechSynthesis;
+        let preferredVoice = null;
+        let speechRate = 1.0;
+        let isPlaying = false;
+        let currentQueue = [];
+        let currentQueueIndex = 0;
+        let activeModalWord = null;
+
+        function initVoices() {
+            if (!synth) return;
+            let voices = synth.getVoices();
+            // Prioritize standard female American voices
+            const voicePriority = ["Samantha", "Zira", "Victoria", "Google US English", "Jenny", "Ava", "Kendra", "Allison"];
+            for (let name of voicePriority) {
+                let v = voices.find(voice => voice.name.includes(name) && voice.lang.startsWith("en"));
+                if (v) {
+                    preferredVoice = v;
+                    break;
+                }
+            }
+            if (!preferredVoice) {
+                preferredVoice = voices.find(voice => voice.lang.startsWith("en-US")) || voices[0];
+            }
+        }
+
+        if (synth) {
+            synth.onvoiceschanged = initVoices;
+            initVoices();
+        }
+
+        function setSpeechRate(rate) {
+            speechRate = rate;
+            document.getElementById('speed-075-btn').className = rate === 0.75 
+                ? "px-2.5 py-1 rounded-md bg-maple-600 text-white shadow-sm font-bold" 
+                : "px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition font-bold";
+            document.getElementById('speed-100-btn').className = rate === 1.0 
+                ? "px-2.5 py-1 rounded-md bg-maple-600 text-white shadow-sm font-bold" 
+                : "px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition font-bold";
+
+            if (isPlaying) {
+                stopSpeech();
+            }
+        }
+
+        // Clean speech text and apply phonetic pronunciation overrides
+        function cleanTextForSpeech(text) {
+            let cleaned = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
+            cleaned = cleaned.replace(/Maple Syrup/gi, 'MAY-puhl SEER-up');
+            cleaned = cleaned.replace(/\bsyrup\b/gi, 'SEER-up');
+            cleaned = cleaned.replace(/Ice Hockey/gi, 'ICE HAH-kee');
+            return cleaned.trim();
+        }
+
+        function stopSpeech() {
+            if (synth) {
+                synth.cancel();
+            }
+            isPlaying = false;
+            currentQueue = [];
+            currentQueueIndex = 0;
+            updatePlayButtonUI(false);
+            clearHighlights();
+        }
+
+        function speakWord(textToSpeak) {
+            stopSpeech();
+            let cleanedText = cleanTextForSpeech(textToSpeak);
+            let utterance = new SpeechSynthesisUtterance(cleanedText);
+            if (preferredVoice) utterance.voice = preferredVoice;
+            utterance.rate = speechRate * 0.9;
+            utterance.pitch = 1.0;
+            synth.speak(utterance);
+        }
+
+        /* Queue-based Sentence Audio Execution */
+        function playSentenceQueue(sentencesArray, onCompleteCallback) {
+            stopSpeech();
+            isPlaying = true;
+            currentQueue = sentencesArray;
+            currentQueueIndex = 0;
+            updatePlayButtonUI(true);
+
+            function speakNext() {
+                if (!isPlaying || currentQueueIndex >= currentQueue.length) {
+                    stopSpeech();
+                    if (onCompleteCallback) onCompleteCallback();
+                    return;
+                }
+
+                clearHighlights();
+                let currentObj = currentQueue[currentQueueIndex];
+                
+                // Highlight current sentence
+                let sEl = document.getElementById(currentObj.id);
+                if (sEl) {
+                    sEl.classList.add('active-sentence');
+                    sEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+
+                // Highlight current paragraph card if playing
+                let parentP = PARAGRAPHS.find(p => p.sentences.some(s => s.id === currentObj.id));
+                if (parentP) {
+                    let cardEl = document.getElementById(`p${parentP.num}-card`);
+                    if (cardEl) cardEl.classList.add('active-paragraph');
+                }
+
+                let cleanText = cleanTextForSpeech(currentObj.text);
+                let utterance = new SpeechSynthesisUtterance(cleanText);
+                if (preferredVoice) utterance.voice = preferredVoice;
+                utterance.rate = speechRate;
+
+                utterance.onend = function() {
+                    if (isPlaying) {
+                        currentQueueIndex++;
+                        speakNext();
+                    }
+                };
+
+                utterance.onerror = function() {
+                    stopSpeech();
+                };
+
+                synth.speak(utterance);
+            }
+
+            speakNext();
+        }
+
+        function toggleReadArticle() {
+            if (isPlaying) {
+                stopSpeech();
+            } else {
+                playSentenceQueue(ALL_SENTENCES);
+            }
+        }
+
+        function playParagraph(paragraphNumber) {
+            let pObj = PARAGRAPHS.find(p => p.num === paragraphNumber);
+            if (pObj) {
+                playSentenceQueue(pObj.sentences);
+            }
+        }
+
+        function handleParagraphContainerClick(event, paragraphNumber) {
+            // Prevent triggering if clicked on word chip
+            if (event.target.classList.contains('word-chip') || event.target.closest('button')) {
+                return;
+            }
+            playParagraph(paragraphNumber);
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.sentence-item').forEach(el => el.classList.remove('active-sentence'));
+            document.querySelectorAll('.paragraph-card').forEach(el => el.classList.remove('active-paragraph'));
+        }
+
+        function updatePlayButtonUI(active) {
+            const icon = document.getElementById('main-play-icon');
+            const text = document.getElementById('main-play-text');
+            if (active) {
+                icon.className = "fa-solid fa-pause";
+                text.innerText = "暫停朗讀 (Pause)";
+            } else {
+                icon.className = "fa-solid fa-play";
+                text.innerText = "朗讀全文 (Read All)";
+            }
+        }
+
+        function toggleAllTranslations() {
+            const translations = document.querySelectorAll('.translation');
+            const btnText = document.getElementById('trans-btn-text');
+            let isHidden = translations[0].classList.contains('hidden');
+
+            translations.forEach(t => {
+                if (isHidden) {
+                    t.classList.remove('hidden');
+                } else {
+                    t.classList.add('hidden');
+                }
+            });
+
+            btnText.innerText = isHidden ? "隱藏中文對照" : "顯示中文對照";
+        }
+
+        function openWordModal(wordKey) {
+            const data = VOCAB_DATA[wordKey];
+            if (!data) return;
+
+            activeModalWord = data;
+            document.getElementById('modal-emoji').innerText = data.emoji;
+            document.getElementById('modal-word').innerText = data.word;
+            document.getElementById('modal-ipa').innerText = data.ipa;
+            document.getElementById('modal-chinese').innerText = data.chinese;
+            document.getElementById('modal-explain').innerText = data.explain;
+            document.getElementById('modal-sentence').innerText = `"${data.sentence}"`;
+
+            document.getElementById('word-modal').classList.remove('hidden');
+            
+            // Auto play standard speech on tap
+            speakWord(data.speechText);
+        }
+
+        function speakCurrentModalWord() {
+            if (activeModalWord) {
+                speakWord(activeModalWord.speechText);
+            }
+        }
+
+        function closeWordModal() {
+            document.getElementById('word-modal').classList.add('hidden');
+            activeModalWord = null;
+        }
+
+        function renderFlashcards() {
+            const container = document.getElementById('flashcards-container');
+            container.innerHTML = "";
+
+            FLASHCARD_KEYS.forEach(key => {
+                let item = VOCAB_DATA[key];
+                let card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition active:scale-95 cursor-pointer flex items-center space-x-4";
+                card.onclick = () => openWordModal(key);
+                card.innerHTML = `
+                    <div class="text-4xl bg-maple-50 p-3 rounded-2xl border border-maple-100 flex-shrink-0">${item.emoji}</div>
+                    <div class="flex-grow">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-extrabold text-slate-800 text-lg">${item.word}</h4>
+                            <i class="fa-solid fa-volume-high text-maple-500 text-sm"></i>
+                        </div>
+                        <p class="text-xs font-mono font-bold text-maple-600">${item.ipa}</p>
+                        <p class="text-sm text-slate-700 mt-1 font-bold">${item.chinese}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = "";
+
+            QUIZ_DATA.forEach((q, idx) => {
+                let qBox = document.createElement('div');
+                qBox.className = "space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100";
+                
+                let optionsHtml = q.options.map((opt, optIdx) => `
+                    <label class="flex items-center space-x-3 p-3 rounded-xl bg-white border border-slate-200 hover:bg-maple-50 cursor-pointer transition">
+                        <input type="radio" name="quiz-${q.id}" value="${optIdx}" class="w-4 h-4 text-maple-600 focus:ring-maple-500">
+                        <span class="text-sm font-bold text-slate-700">${opt}</span>
+                    </label>
+                `).join('');
+
+                qBox.innerHTML = `
+                    <p class="font-black text-slate-800 text-sm md:text-base">${idx + 1}. ${q.question}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${optionsHtml}</div>
+                    <div id="quiz-feedback-${q.id}" class="text-xs font-black hidden py-1.5 px-3 rounded-xl"></div>
+                `;
+                container.appendChild(qBox);
+            });
+        }
+
+        function playWebAudioSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'correct') {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } else {
+                    osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
+                    osc.frequency.setValueAtTime(170, ctx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                }
+            } catch (e) {
+                // Audio context fallback
+            }
+        }
+
+        function checkQuizResults() {
+            let score = 0;
+            QUIZ_DATA.forEach(q => {
+                let selected = document.querySelector(`input[name="quiz-${q.id}"]:checked`);
+                let feedback = document.getElementById(`quiz-feedback-${q.id}`);
+                feedback.classList.remove('hidden', 'text-green-700', 'text-red-700', 'bg-green-100', 'bg-red-100');
+
+                if (selected && parseInt(selected.value) === q.correct) {
+                    score++;
+                    feedback.innerText = "✓ 正確！答得好！ (Correct!)";
+                    feedback.classList.add('text-green-700', 'bg-green-100');
+                } else {
+                    feedback.innerText = `✕ 再想想看喔！正確答案是：${q.options[q.correct]}`;
+                    feedback.classList.add('text-red-700', 'bg-red-100');
+                }
+            });
+
+            document.getElementById('quiz-score-badge').innerText = `得分: ${score} / ${QUIZ_DATA.length}`;
+
+            if (score === QUIZ_DATA.length) {
+                playWebAudioSound('correct');
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 100,
+                        spread: 80,
+                        origin: { y: 0.6 }
+                    });
+                }
+            } else {
+                playWebAudioSound('incorrect');
+            }
+        }
+
+        window.onload = function() {
+            renderFlashcards();
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>

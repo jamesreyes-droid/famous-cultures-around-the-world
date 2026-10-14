@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Spain: Bullfighting & Flamenco!</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'spain-red': '#C60B1E',
+                        'spain-darkred': '#8B0000',
+                        'spain-gold': '#FFC400',
+                        'spain-yellow': '#F1BF00',
+                        'spain-charcoal': '#1C1917',
+                        'flamenco-rose': '#E11D48',
+                        'matador-purple': '#7C3AED',
+                        'spain-cream': '#FFFBEB'
+                    },
+                    fontFamily: {
+                        'heading': ['Fredoka', 'sans-serif'],
+                        'body': ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #FFFBEB;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Color-coded badges for Bullfighting and Flamenco */
+        .tag-bullfighting {
+            background-color: #FEF2F2;
+            color: #991B1B;
+            border: 2px solid #DC2626;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 6px rgba(220, 38, 38, 0.25);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .tag-bullfighting:hover {
+            transform: scale(1.05);
+        }
+
+        .tag-flamenco {
+            background-color: #FFF1F2;
+            color: #BE123C;
+            border: 2px solid #E11D48;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 6px rgba(225, 29, 72, 0.25);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .tag-flamenco:hover {
+            transform: scale(1.05);
+        }
+
+        /* Active sentence highlighting when speech synthesis plays */
+        .sentence-active {
+            background-color: #FEF08A !important;
+            border-radius: 6px;
+            padding: 2px 4px;
+            box-shadow: 0 0 8px rgba(250, 204, 21, 0.7);
+            transition: all 0.2s ease;
+        }
+
+        /* Vocabulary hover tooltip styling */
+        .vocab-tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px dashed #C60B1E;
+            color: #C60B1E;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .vocab-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 160px;
+            background-color: #1C1917;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 6px 8px;
+            position: absolute;
+            z-index: 30;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+        .vocab-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .bounce-slow {
+            animation: bounceSlow 2s infinite;
+        }
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header / Banner -->
+    <header class="bg-gradient-to-r from-spain-darkred via-spain-red to-amber-600 text-white shadow-lg sticky top-0 z-50 border-b-4 border-spain-gold">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl bounce-slow">🇪🇸</span>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-wide text-spain-gold">Explore Spain! 西班牙文化之旅</h1>
+                    <p class="text-xs md:text-sm text-amber-100 font-bold">Grade 6 EFL Visual Reading (Female US Accent 🎙️ - Clean Voice)</p>
+                </div>
+            </div>
+            
+            <!-- Audio Controls Toolbar -->
+            <div class="flex items-center space-x-2 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
+                <span class="text-xs font-bold text-spain-gold hidden sm:inline"><i class="fas fa-venus text-pink-300"></i> US Female Voice</span>
+                <button onclick="toggleSpeed()" id="speedBtn" class="bg-spain-gold text-amber-950 font-bold text-xs px-3 py-1 rounded-full hover:bg-yellow-300 transition shadow">
+                    ⚡ Speed: <span id="speedVal">1.0x</span>
+                </button>
+                <button onclick="stopSpeech()" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold transition shadow flex items-center space-x-1">
+                    <i class="fas fa-stop"></i> <span>Stop 停止</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow space-y-8">
+
+        <!-- Visual Cue Spotlight Cards -->
+        <section class="bg-gradient-to-br from-red-100 via-amber-50 to-orange-100 p-6 rounded-3xl border-2 border-red-200 shadow-md space-y-4">
+            <div class="text-center space-y-1">
+                <span class="bg-spain-gold text-amber-950 text-xs font-black uppercase px-3 py-1 rounded-full shadow-sm">Target Vocabulary 重點單字</span>
+                <h2 class="text-2xl font-black text-gray-800">Two Famous Spanish Highlights!</h2>
+                <p class="text-xs md:text-sm text-gray-600 font-semibold">Tap any card or speaker button 🔊 to hear clean English audio without icon sounds!</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <!-- Card 1: Bullfighting -->
+                <div onclick="speakWord('Bullfighting')" class="bg-white p-4 rounded-2xl border-2 border-red-400 shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-red-100 border-2 border-red-400 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition">
+                            🐂
+                        </div>
+                        <div>
+                            <span class="tag-bullfighting text-lg">
+                                🐂 Bullfighting
+                            </span>
+                            <p class="text-xs text-gray-600 font-bold mt-1">鬥牛 (西班牙鬥牛)</p>
+                            <span class="inline-block text-[10px] bg-red-100 text-red-900 font-bold px-2 py-0.5 rounded mt-0.5">Traditional Sport 🚩</span>
+                        </div>
+                    </div>
+                    <button class="w-12 h-12 bg-spain-red group-hover:bg-red-700 text-white rounded-full flex items-center justify-center shadow-md text-xl transition">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+
+                <!-- Card 2: Flamenco -->
+                <div onclick="speakWord('Flamenco')" class="bg-white p-4 rounded-2xl border-2 border-rose-400 shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-rose-100 border-2 border-rose-400 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition">
+                            💃
+                        </div>
+                        <div>
+                            <span class="tag-flamenco text-lg">
+                                💃 Flamenco
+                            </span>
+                            <p class="text-xs text-gray-600 font-bold mt-1">弗明哥舞 / 弗拉明戈</p>
+                            <span class="inline-block text-[10px] bg-rose-100 text-rose-900 font-bold px-2 py-0.5 rounded mt-0.5">Passionate Dance 🎸</span>
+                        </div>
+                    </div>
+                    <button class="w-12 h-12 bg-flamenco-rose group-hover:bg-rose-700 text-white rounded-full flex items-center justify-center shadow-md text-xl transition">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Short Reading Article Container -->
+        <section class="bg-white rounded-3xl shadow-xl border-2 border-amber-300 overflow-hidden">
+            <!-- Article Header Bar -->
+            <div class="bg-gradient-to-r from-spain-darkred via-spain-red to-spain-charcoal p-5 text-white flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <span class="bg-spain-gold text-amber-950 font-black text-xs px-3 py-1 rounded-full uppercase">Short Story 簡短文章</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-spain-gold mt-1">Famous Spain: Bullfighting & Flamenco 西班牙風采</h2>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="readFullArticle()" class="bg-spain-gold hover:bg-yellow-300 text-amber-950 font-black px-4 py-2 rounded-xl shadow-md flex items-center space-x-2 transition transform active:scale-95 text-sm">
+                        <i class="fas fa-play-circle text-lg"></i>
+                        <span>Read Full Story 朗讀全文</span>
+                    </button>
+                    <button onclick="toggleAllChinese()" class="bg-white/20 hover:bg-white/30 text-white font-bold px-3 py-2 rounded-xl border border-white/30 text-xs transition">
+                        <i class="fas fa-language text-base"></i> <span id="toggleAllBtnText">Show Chinese 顯示中文</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reading Paragraphs -->
+            <div class="p-5 md:p-8 space-y-6 text-base md:text-lg leading-relaxed">
+
+                <!-- Sentence 1: Country intro -->
+                <div class="p-4 bg-amber-50/70 rounded-2xl border border-amber-200 space-y-2 hover:border-amber-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-amber-900 bg-amber-200 px-2.5 py-0.5 rounded-full">Part 1 📍 The Country 國家</span>
+                        <button onclick="speakSentence('s1')" class="text-spain-darkred bg-amber-200 hover:bg-amber-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s1_1" class="sentence-node">Spain is a beautiful country in southwestern <span class="vocab-tooltip" onclick="speakWord('Europe')">Europe<span class="tooltip-text">歐洲 🌍</span></span>.</span>
+                        <span id="s1_2" class="sentence-node">It is famous for sunny weather, rich history, and exciting culture!</span>
+                    </p>
+                    <div id="trans1" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-amber-200 font-semibold">
+                        🇨🇳 西班牙是位於歐洲西南部的一個美麗國家。它以陽光明媚的天氣、豐富的歷史和刺激的文化而聞名！
+                    </div>
+                    <button onclick="toggleTrans('trans1')" class="text-xs font-bold text-amber-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 2: Bullfighting -->
+                <div class="p-4 bg-red-50/70 rounded-2xl border border-red-200 space-y-2 hover:border-red-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-red-900 bg-red-200 px-2.5 py-0.5 rounded-full">Part 2 🐂 Traditional Sport 傳統鬥牛</span>
+                        <button onclick="speakSentence('s2')" class="text-spain-red bg-red-200 hover:bg-red-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s2_1" class="sentence-node">One famous tradition is <span class="tag-bullfighting" onclick="speakWord('Bullfighting')">🐂 Bullfighting</span>.</span>
+                        <span id="s2_2" class="sentence-node">In the ring, a brave <span class="vocab-tooltip" onclick="speakWord('matador')">matador<span class="tooltip-text">鬥牛士 🚩</span></span> wears a colorful cape and shows great courage with a strong bull.</span>
+                        <span id="s2_3" class="sentence-node">It is an old Spanish tradition that many people know!</span>
+                    </p>
+                    <div id="trans2" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-red-200 font-semibold">
+                        🇨🇳 一個著名的傳統是 <strong>Bullfighting (斗牛)</strong>。在競技場中，勇敢的鬥牛士揮舞著鮮豔的斗篷，與強壯的公牛展現無畏的勇氣。這是大家都知道的古老西班牙傳統！
+                    </div>
+                    <button onclick="toggleTrans('trans2')" class="text-xs font-bold text-red-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 3: Flamenco -->
+                <div class="p-4 bg-rose-50/70 rounded-2xl border border-rose-200 space-y-2 hover:border-rose-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-rose-900 bg-rose-200 px-2.5 py-0.5 rounded-full">Part 3 💃 Passionate Dance 熱情舞蹈</span>
+                        <button onclick="speakSentence('s3')" class="text-flamenco-rose bg-rose-200 hover:bg-rose-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s3_1" class="sentence-node">Another famous art form is <span class="tag-flamenco" onclick="speakWord('Flamenco')">💃 Flamenco</span>.</span>
+                        <span id="s3_2" class="sentence-node">Dancers wear red dresses, clap their hands, and stamp their feet to fast <span class="vocab-tooltip" onclick="speakWord('guitar')">guitar<span class="tooltip-text">吉他 🎸</span></span> music.</span>
+                        <span id="s3_3" class="sentence-node">It is full of energy and passion!</span>
+                    </p>
+                    <div id="trans3" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-rose-200 font-semibold">
+                        🇨🇳 另一個著名的藝術形式是 <strong>Flamenco (弗明哥舞)</strong>。舞者身穿紅裙，隨著快速的吉他音樂拍手並踏腳。這充滿了能量與熱情！
+                    </div>
+                    <button onclick="toggleTrans('trans3')" class="text-xs font-bold text-rose-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 4: Summary -->
+                <div class="p-4 bg-amber-50/70 rounded-2xl border border-amber-200 space-y-2 hover:border-amber-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-amber-900 bg-amber-200 px-2.5 py-0.5 rounded-full">Part 4 ✨ Fun Summary 快樂結語</span>
+                        <button onclick="speakSentence('s4')" class="text-spain-darkred bg-amber-200 hover:bg-amber-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s4_1" class="sentence-node"><span class="tag-bullfighting" onclick="speakWord('Bullfighting')">🐂 Bullfighting</span> and <span class="tag-flamenco" onclick="speakWord('Flamenco')">💃 Flamenco</span> make Spain famous across the world.</span>
+                        <span id="s4_2" class="sentence-node">Welcome to feel the rhythm and spirit of Spain!</span>
+                    </p>
+                    <div id="trans4" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-amber-200 font-semibold">
+                        🇨🇳 <strong>Bullfighting</strong> 與 <strong>Flamenco</strong> 讓西班牙聞名全球。歡迎來感受西班牙的節奏與靈魂！
+                    </div>
+                    <button onclick="toggleTrans('trans4')" class="text-xs font-bold text-amber-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Visual Picture Flashcards -->
+        <section class="bg-white p-6 rounded-3xl shadow-lg border-2 border-spain-gold space-y-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-spain-gold rounded-2xl flex items-center justify-center text-amber-950 font-bold text-xl shadow-sm">
+                    🖼️
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-gray-800">Visual Picture Cards 視覺圖解單字</h3>
+                    <p class="text-xs text-gray-500 font-bold">Tap card to hear audio & read Traditional Chinese!</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                <div onclick="speakWord('Spain')" class="bg-amber-50 border-2 border-amber-300 hover:border-amber-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🇪🇸</div>
+                    <h4 class="font-black text-amber-900 text-sm">Spain</h4>
+                    <p class="text-xs text-amber-700 font-bold">西班牙</p>
+                </div>
+                <div onclick="speakWord('Matador')" class="bg-red-50 border-2 border-red-300 hover:border-red-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🚩</div>
+                    <h4 class="font-black text-red-900 text-sm">Matador</h4>
+                    <p class="text-xs text-red-700 font-bold">鬥牛士</p>
+                </div>
+                <div onclick="speakWord('Bull')" class="bg-orange-50 border-2 border-orange-300 hover:border-orange-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🐂</div>
+                    <h4 class="font-black text-orange-900 text-sm">Bull</h4>
+                    <p class="text-xs text-orange-700 font-bold">公牛</p>
+                </div>
+                <div onclick="speakWord('Flamenco')" class="bg-rose-50 border-2 border-rose-300 hover:border-rose-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">💃</div>
+                    <h4 class="font-black text-rose-900 text-sm">Flamenco</h4>
+                    <p class="text-xs text-rose-700 font-bold">弗明哥舞</p>
+                </div>
+                <div onclick="speakWord('Guitar')" class="bg-yellow-50 border-2 border-yellow-300 hover:border-yellow-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🎸</div>
+                    <h4 class="font-black text-yellow-900 text-sm">Guitar</h4>
+                    <p class="text-xs text-yellow-700 font-bold">吉他</p>
+                </div>
+                <div onclick="speakWord('Passion')" class="bg-purple-50 border-2 border-purple-300 hover:border-purple-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm col-span-2 sm:col-span-1">
+                    <div class="text-3xl mb-1">🔥</div>
+                    <h4 class="font-black text-purple-900 text-sm">Passion</h4>
+                    <p class="text-xs text-purple-700 font-bold">熱情</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Comprehension Quiz -->
+        <section class="bg-gradient-to-br from-spain-charcoal via-spain-darkred to-spain-red p-6 md:p-8 rounded-3xl text-white shadow-xl space-y-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-spain-gold rounded-2xl flex items-center justify-center text-amber-950 font-bold text-2xl shadow-md">
+                    ⭐
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-spain-gold">Short Quiz 閱讀理解小測驗</h3>
+                    <p class="text-xs text-amber-100 font-bold">Tap the correct answer for all 4 questions!</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-gray-800" id="quizContainer">
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        1. What is <span class="tag-bullfighting text-xs">🐂 Bullfighting</span> in Spain? <span class="text-xs font-normal text-gray-500">(西班牙鬥牛是什麼？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 1, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left">A) A traditional sport with a matador and bull (經典鬥牛傳統) 🚩</button>
+                        <button onclick="checkAnswer(this, 1, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left">B) A game played in the water (水上遊戲) 🏊</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        2. What instrument is played for <span class="tag-flamenco text-xs">💃 Flamenco</span> dancing? <span class="text-xs font-normal text-gray-500">(弗明哥舞配什麼樂器？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 2, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left">A) Drums (鼓) 🥁</button>
+                        <button onclick="checkAnswer(this, 2, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left">B) Fast guitar music (快節奏吉他) 🎸</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        3. What does a brave matador carry in the ring? <span class="text-xs font-normal text-gray-500">(勇敢的鬥牛士在場上揮舞什麼？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 3, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left">A) A colorful cape (鮮豔斗篷) 🚩</button>
+                        <button onclick="checkAnswer(this, 3, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left">B) An umbrella (雨傘) ☂️</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        4. What feeling does <span class="tag-flamenco text-xs">💃 Flamenco</span> dance bring? <span class="text-xs font-normal text-gray-500">(弗明哥舞帶來什麼感覺？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 4, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left">A) Energy and passion (能量與熱情) 🔥</button>
+                        <button onclick="checkAnswer(this, 4, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left">B) Boredom and sleepiness (無聊打瞌睡) 🥱</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Result -->
+            <div id="quizResult" class="hidden bg-spain-gold text-amber-950 p-6 rounded-2xl text-center space-y-2 shadow-xl animate-bounce">
+                <div class="text-4xl">🌟 🏆 🇪🇸</div>
+                <h4 class="text-2xl font-black">¡Excelente! 太棒了！</h4>
+                <p id="scoreText" class="text-lg font-extrabold">You got 4 / 4 correct!</p>
+                <button onclick="resetQuiz()" class="mt-2 bg-spain-charcoal hover:bg-black text-white font-black text-xs px-5 py-2.5 rounded-xl shadow transition">
+                    Play Again 重新答題
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-spain-charcoal text-gray-400 py-4 text-center text-xs border-t-4 border-spain-red">
+        <p>🇪🇸 Discover Spain EFL Visual Reader | Grade 6 A0/A1 Level Learning Tool</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const synth = window.speechSynthesis;
+        let currentRate = 1.0;
+        let femaleUSVoice = null;
+
+        /**
+         * SANITIZATION FUNCTION:
+         * Strips all emojis and pictographs so Web Speech API never speaks emoji descriptions.
+         */
+        function cleanTextForSpeech(text) {
+            if (!text) return "";
+            return text
+                // Standard Emoji ranges & symbols
+                .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2300}-\u{23FF}\u{2B50}\u{2B55}]/gu, '')
+                // Extra special characters or UI indicators
+                .replace(/[⭐🎬🏀🎥🌟📣🌎🍲🏊😴📸🪄🧙‍♂️☎️📞🛣️🐂💃🚩🎸🔥🏻🏼🏽🏾🏿]/g, '')
+                .trim();
+        }
+
+        // Voice Filter for Female Standard American (US) Accent
+        function loadFemaleUSVoice() {
+            if (!synth) return;
+            const voices = synth.getVoices();
+            const femaleUSKeywords = ['samantha', 'zira', 'victoria', 'google us english', 'jenny', 'aria', 'ava', 'kendra', 'allison', 'susan', 'michelle', 'female'];
+
+            femaleUSVoice = voices.find(v => 
+                (v.lang === 'en-US' || v.lang === 'en_US') && 
+                femaleUSKeywords.some(keyword => v.name.toLowerCase().includes(keyword))
+            );
+
+            if (!femaleUSVoice) {
+                femaleUSVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US');
+            }
+
+            if (!femaleUSVoice) {
+                femaleUSVoice = voices.find(v => 
+                    v.lang.startsWith('en') && 
+                    femaleUSKeywords.some(keyword => v.name.toLowerCase().includes(keyword))
+                );
+            }
+
+            if (!femaleUSVoice && voices.length > 0) {
+                femaleUSVoice = voices[0];
+            }
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadFemaleUSVoice;
+        }
+        loadFemaleUSVoice();
+
+        // Web Audio API Sound Effects synth for Quiz
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(164.81, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                }
+            } catch (e) {
+                console.log('Audio Context error:', e);
+            }
+        }
+
+        const sentences = [
+            { id: "s1_1", text: "Spain is a beautiful country in southwestern Europe." },
+            { id: "s1_2", text: "It is famous for sunny weather, rich history, and exciting culture!" },
+            { id: "s2_1", text: "One famous tradition is Bullfighting." },
+            { id: "s2_2", text: "In the ring, a brave matador wears a colorful cape and shows great courage with a strong bull." },
+            { id: "s2_3", text: "It is an old Spanish tradition that many people know!" },
+            { id: "s3_1", text: "Another famous art form is Flamenco." },
+            { id: "s3_2", text: "Dancers wear red dresses, clap their hands, and stamp their feet to fast guitar music." },
+            { id: "s3_3", text: "It is full of energy and passion!" },
+            { id: "s4_1", text: "Bullfighting and Flamenco make Spain famous across the world." },
+            { id: "s4_2", text: "Welcome to feel the rhythm and spirit of Spain!" }
+        ];
+
+        function toggleSpeed() {
+            if (currentRate === 1.0) {
+                currentRate = 0.75;
+                document.getElementById('speedVal').innerText = "0.75x (Slow)";
+            } else {
+                currentRate = 1.0;
+                document.getElementById('speedVal').innerText = "1.0x (Normal)";
+            }
+        }
+
+        function configureUtterance(rawText) {
+            // Clean text before creating utterance
+            const cleanedText = cleanTextForSpeech(rawText);
+            const utter = new SpeechSynthesisUtterance(cleanedText);
+            utter.rate = currentRate;
+            utter.lang = 'en-US';
+            if (femaleUSVoice) {
+                utter.voice = femaleUSVoice;
+            }
+            return utter;
+        }
+
+        function speakWord(word) {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            const utter = configureUtterance(word);
+            synth.speak(utter);
+        }
+
+        function speakSentence(partId) {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            const sentenceNodes = document.querySelectorAll(`[id^="${partId}_"]`);
+            let rawPartText = "";
+            sentenceNodes.forEach(node => {
+                rawPartText += node.innerText + " ";
+                node.classList.add('sentence-active');
+            });
+
+            const utter = configureUtterance(rawPartText);
+            utter.onend = () => clearHighlights();
+            synth.speak(utter);
+        }
+
+        function readFullArticle() {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            let index = 0;
+
+            function playNext() {
+                if (index >= sentences.length) {
+                    clearHighlights();
+                    return;
+                }
+
+                clearHighlights();
+                const current = sentences[index];
+                const node = document.getElementById(current.id);
+                if (node) node.classList.add('sentence-active');
+
+                const utter = configureUtterance(current.text);
+                
+                utter.onend = () => {
+                    index++;
+                    playNext();
+                };
+
+                synth.speak(utter);
+            }
+
+            playNext();
+        }
+
+        function stopSpeech() {
+            if (synth) synth.cancel();
+            clearHighlights();
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.sentence-node').forEach(el => {
+                el.classList.remove('sentence-active');
+            });
+        }
+
+        function toggleTrans(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        let allShow = false;
+        function toggleAllChinese() {
+            allShow = !allShow;
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`trans${i}`);
+                if (el) {
+                    if (allShow) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                }
+            }
+            document.getElementById('toggleAllBtnText').innerText = allShow ? "Hide Chinese 隱藏中文" : "Show Chinese 顯示中文";
+        }
+
+        let answeredCount = 0;
+        let score = 0;
+
+        function checkAnswer(btn, qNum, isCorrect) {
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('.q-btn');
+
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.className = "q-btn border-2 border-gray-200 p-3 rounded-xl text-left opacity-60";
+            });
+
+            if (isCorrect) {
+                btn.className = "q-btn border-2 border-green-500 bg-green-100 text-green-900 font-black p-3 rounded-xl text-left";
+                btn.innerHTML += " ✓ Correct!";
+                score++;
+                playSound('correct');
+                confetti({ particleCount: 35, spread: 65, origin: { y: 0.8 } });
+            } else {
+                btn.className = "q-btn border-2 border-red-400 bg-red-100 text-red-900 font-black p-3 rounded-xl text-left";
+                btn.innerHTML += " ✗ Try again next time";
+                playSound('incorrect');
+            }
+
+            answeredCount++;
+            if (answeredCount === 4) {
+                setTimeout(() => {
+                    document.getElementById('quizResult').classList.remove('hidden');
+                    document.getElementById('scoreText').innerText = `You scored ${score} / 4! 🎉`;
+                }, 500);
+            }
+        }
+
+        function resetQuiz() {
+            answeredCount = 0;
+            score = 0;
+            document.getElementById('quizResult').classList.add('hidden');
+            
+            const buttons = document.querySelectorAll('.q-btn');
+            buttons.forEach(b => {
+                b.disabled = false;
+                b.className = "q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-red-50 text-left";
+                b.innerHTML = b.innerHTML.replace(" ✓ Correct!", "").replace(" ✗ Try again next time", "");
+            });
+        }
+    </script>
+</body>
+</html>

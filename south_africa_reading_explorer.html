@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover South Africa! 🇿🇦 Safari & Rugby Spotlight Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        saGold: '#EAB308',
+                        saGoldLight: '#FEF08A',
+                        saGreen: '#15803D',
+                        saGreenLight: '#DCFCE7',
+                        saTerracotta: '#C2410C',
+                        saBg: '#FEFCE8',
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #FEFCE8;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .highlight-sentence {
+            background-color: #FEF08A !important;
+            border-radius: 12px;
+            box-shadow: 0 0 0 3px #15803D;
+            transition: all 0.25s ease;
+        }
+        .card-bounce {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-bounce:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Pulsing Spotlight Badges for Safari & Rugby */
+        .spotlight-pulse {
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 8px rgba(234, 179, 8, 0.4); }
+            100% { box-shadow: 0 0 18px rgba(21, 128, 61, 0.7); }
+        }
+
+        /* Interactive Word Badges & Floating Tooltips */
+        .vocab-hl {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            padding: 2px 8px;
+            margin: 0 2px;
+            border-radius: 8px;
+            font-weight: 700;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .vocab-hl:hover {
+            transform: scale(1.05);
+        }
+
+        /* Hero Highlight Styles for Featured Icons (Safari & Rugby) */
+        .featured-icon-badge {
+            background: linear-gradient(135deg, #FEF08A 0%, #FDE047 100%);
+            border: 2px solid #EAB308;
+            color: #854D0E;
+            font-size: 1.05em;
+            box-shadow: 0 2px 6px rgba(234, 179, 8, 0.3);
+        }
+        .featured-rugby-badge {
+            background: linear-gradient(135deg, #DCFCE7 0%, #86EFAC 100%);
+            border: 2px solid #16A34A;
+            color: #14532D;
+            font-size: 1.05em;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+        }
+        
+        .vocab-hl .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            width: max-content;
+            background-color: #1E293B;
+            color: #FFFFFF;
+            text-align: center;
+            border-radius: 6px;
+            padding: 4px 8px;
+            position: absolute;
+            z-index: 20;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            pointer-events: none;
+        }
+        .vocab-hl .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1E293B transparent transparent transparent;
+        }
+        .vocab-hl:hover .tooltip-text,
+        .vocab-hl:focus .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-yellow-50/50 text-slate-800 min-h-screen flex flex-col">
+
+    <header class="bg-gradient-to-r from-emerald-800 via-green-700 to-amber-600 text-white py-6 px-4 shadow-lg relative overflow-hidden">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between relative z-10 gap-4">
+            <div class="flex items-center gap-3 text-center md:text-left">
+                <span class="text-5xl filter drop-shadow">🇿🇦</span>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold tracking-wide">Discover South Africa!</h1>
+                    <p class="text-amber-200 text-sm md:text-base font-medium">Explore Safari Adventures & Rugby Champions (Springboks)</p>
+                </div>
+            </div>
+            <div class="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider text-white border border-white/30 flex items-center gap-2">
+                <span>🇺🇸 Standard American Voice (Female)</span> • Grade 6 EFL (A0/A1)
+            </div>
+        </div>
+        <div class="absolute -bottom-6 -right-6 opacity-20 text-8xl pointer-events-none">🦁</div>
+        <div class="absolute -top-6 -left-6 opacity-20 text-8xl pointer-events-none">🏉</div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
+
+        <!-- PROMINENT SPOTLIGHT SECTION: SAFARI & RUGBY -->
+        <section class="bg-gradient-to-r from-amber-500 via-yellow-500 to-emerald-600 p-1 rounded-3xl shadow-xl spotlight-pulse">
+            <div class="bg-white rounded-[22px] p-5 md:p-6">
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">⭐</span>
+                        <h2 class="text-2xl font-extrabold text-slate-900 font-heading">
+                            Featured Icons: Safari & Rugby (南非兩大特色)
+                        </h2>
+                    </div>
+                    <span class="bg-amber-100 text-amber-900 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                        2 Famous Items
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Icon 1: Safari Spotlight -->
+                    <div class="bg-amber-50/80 border-2 border-amber-300 rounded-2xl p-4 flex items-center gap-4 card-bounce relative overflow-hidden">
+                        <div class="bg-amber-500 text-white p-3 rounded-2xl text-4xl shadow-md">
+                            🛻
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xl font-bold text-amber-950 font-heading">1. Safari</h3>
+                                <span class="text-xs bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-bold">野生探險獵遊</span>
+                            </div>
+                            <p class="text-xs text-amber-800 mt-1 font-medium">
+                                Ride in a Jeep into the wild to spot lions 🦁, elephants 🐘, and rhinos 🦏!
+                            </p>
+                            <button onclick="speakWord('Safari')" class="mt-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full px-3 py-1 text-xs font-bold transition-all shadow flex items-center gap-1">
+                                🔊 Hear "Safari" (US Accent)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Icon 2: Rugby Spotlight -->
+                    <div class="bg-emerald-50/80 border-2 border-emerald-300 rounded-2xl p-4 flex items-center gap-4 card-bounce relative overflow-hidden">
+                        <div class="bg-emerald-700 text-white p-3 rounded-2xl text-4xl shadow-md">
+                            🏉
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xl font-bold text-emerald-950 font-heading">2. Rugby</h3>
+                                <span class="text-xs bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-bold">英式橄欖球</span>
+                            </div>
+                            <p class="text-xs text-emerald-800 mt-1 font-medium">
+                                South Africa's favorite sport! The world-famous Springboks team 🦌 play in big stadiums!
+                            </p>
+                            <button onclick="speakWord('Rugby')" class="mt-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full px-3 py-1 text-xs font-bold transition-all shadow flex items-center gap-1">
+                                🔊 Hear "Rugby" (US Accent)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KEY VOCABULARY CARDS -->
+        <section class="bg-white rounded-2xl p-6 shadow-md border border-emerald-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                <h2 class="text-2xl font-bold text-emerald-800 flex items-center gap-2 font-heading">
+                    <span>💡</span> Key Vocabulary (重點單字)
+                </h2>
+                <div class="flex items-center gap-2 text-xs bg-emerald-100 text-emerald-900 px-3 py-1.5 rounded-full font-bold">
+                    <span>🇺🇸</span>
+                    <span>Click 'Listen' for female standard American audio!</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <!-- Safari (Featured) -->
+                <div class="bg-amber-100 border-2 border-amber-400 rounded-xl p-3 flex flex-col items-center text-center card-bounce shadow-sm">
+                    <span class="text-3xl mb-1">🛻</span>
+                    <span class="font-extrabold text-amber-950 text-base">Safari ★</span>
+                    <span class="text-[10px] text-amber-800 font-bold">(n.) /səˈfɑː.ri/</span>
+                    <span class="text-xs text-amber-900 font-bold">野生探險獵遊</span>
+                    <button onclick="speakWord('Safari')" class="mt-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full px-3 py-1 text-xs transition-colors flex items-center gap-1 shadow-sm font-semibold">
+                        🔊 Listen
+                    </button>
+                </div>
+
+                <!-- Rugby (Featured) -->
+                <div class="bg-emerald-100 border-2 border-emerald-400 rounded-xl p-3 flex flex-col items-center text-center card-bounce shadow-sm">
+                    <span class="text-3xl mb-1">🏉</span>
+                    <span class="font-extrabold text-emerald-950 text-base">Rugby ★</span>
+                    <span class="text-[10px] text-emerald-800 font-bold">(n.) /ˈrʌɡ.bi/</span>
+                    <span class="text-xs text-emerald-900 font-bold">英式橄欖球</span>
+                    <button onclick="speakWord('Rugby')" class="mt-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full px-3 py-1 text-xs transition-colors flex items-center gap-1 shadow-sm font-semibold">
+                        🔊 Listen
+                    </button>
+                </div>
+
+                <!-- Lion -->
+                <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 flex flex-col items-center text-center card-bounce">
+                    <span class="text-3xl mb-1">🦁</span>
+                    <span class="font-bold text-slate-800">Lion</span>
+                    <span class="text-[10px] text-orange-700 font-bold">(n.) /ˈlaɪ.ən/</span>
+                    <span class="text-xs text-slate-500 font-medium">獅子</span>
+                    <button onclick="speakWord('Lion')" class="mt-2 bg-orange-600 hover:bg-orange-700 text-white rounded-full px-3 py-1 text-xs transition-colors flex items-center gap-1 shadow-sm font-semibold">
+                        🔊 Listen
+                    </button>
+                </div>
+
+                <!-- Elephant -->
+                <div class="bg-slate-100 border border-slate-300 rounded-xl p-3 flex flex-col items-center text-center card-bounce">
+                    <span class="text-3xl mb-1">🐘</span>
+                    <span class="font-bold text-slate-800">Elephant</span>
+                    <span class="text-[10px] text-slate-600 font-semibold">(n.) /ˈel.ɪ.fənt/</span>
+                    <span class="text-xs text-slate-500 font-medium">大象</span>
+                    <button onclick="speakWord('Elephant')" class="mt-2 bg-slate-700 hover:bg-slate-800 text-white rounded-full px-3 py-1 text-xs transition-colors flex items-center gap-1 shadow-sm font-semibold">
+                        🔊 Listen
+                    </button>
+                </div>
+
+                <!-- Rhino -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 flex flex-col items-center text-center card-bounce">
+                    <span class="text-3xl mb-1">🦏</span>
+                    <span class="font-bold text-slate-800">Rhino</span>
+                    <span class="text-[10px] text-yellow-700 font-semibold">(n.) /ˈraɪ.nəʊ/</span>
+                    <span class="text-xs text-slate-500 font-medium">犀牛</span>
+                    <button onclick="speakWord('Rhino')" class="mt-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-full px-3 py-1 text-xs transition-colors flex items-center gap-1 shadow-sm font-semibold">
+                        🔊 Listen
+                    </button>
+                </div>
+
+                <!-- Team -->
+                <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 flex flex-col items-center text-center card-bounce">
+                    <span class="text-3xl mb-1">👥</span>
+                    <span class="font-bold text-slate-800">Team</span>
+                    <span class="text-[10px] text-teal-700 font-semibold">(n.) /tiːm/</span>
+                    <span class="text-xs text-slate-500 font-medium">隊伍 / 球隊</span>
+                    <button onclick="speakWord('Team')" class="mt-2 bg-teal-600 hover:bg-teal-700 text-white rounded-full px-3 py-1 text-xs transition-colors flex items-center gap-1 shadow-sm font-semibold">
+                        🔊 Listen
+                    </button>
+                </div>
+
+                <!-- Oval Ball -->
+                <div class="bg-amber-50 border border-amber-300 rounded-xl p-3 flex flex-col items-center text-center card-bounce">
+                    <span class="text-3xl mb-1">🏈</span>
+                    <span class="font-bold text-slate-800">Oval Ball</span>
+                    <span class="text-[10px] text-amber-800 font-semibold">(n.) /ˈəʊ.vəl bɔːl/</span>
+                    <span class="text-xs text-slate-600 font-medium">橢圓形球</span>
+                    <button onclick="speakWord('Oval Ball')" class="mt-2 bg-amber-700 hover:bg-amber-800 text-white rounded-full px-3 py-1 text-xs transition-colors flex items-center gap-1 shadow-sm font-semibold">
+                        🔊 Listen
+                    </button>
+                </div>
+
+                <!-- Stadium -->
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 flex flex-col items-center text-center card-bounce">
+                    <span class="text-3xl mb-1">🏟️</span>
+                    <span class="font-bold text-slate-800">Stadium</span>
+                    <span class="text-[10px] text-purple-700 font-semibold">(n.) /ˈsteɪ.di.əm/</span>
+                    <span class="text-xs text-slate-500 font-medium">體育場</span>
+                    <button onclick="speakWord('Stadium')" class="mt-2 bg-purple-600 hover:bg-purple-700 text-white rounded-full px-3 py-1 text-xs transition-colors flex items-center gap-1 shadow-sm font-semibold">
+                        🔊 Listen
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- READING ARTICLE SECTION -->
+        <section class="bg-white rounded-2xl p-6 shadow-md border border-emerald-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2 font-heading">
+                        <span>📖</span> Reading Article (文章朗讀)
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Click any sentence to listen • Powered by standard American voice engine</p>
+                </div>
+
+                <!-- Audio Player Controls -->
+                <div class="flex flex-wrap items-center gap-2 bg-emerald-50/80 p-2 rounded-xl border border-emerald-200">
+                    <button id="btnPlayAll" onclick="playFullArticle()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors flex items-center gap-2 shadow-sm">
+                        <span>▶️</span> Listen All
+                    </button>
+                    <button id="btnPause" onclick="pauseAudio()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-bold text-sm transition-colors">
+                        ⏸️ Pause
+                    </button>
+                    <button id="btnStop" onclick="stopAudio()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-bold text-sm transition-colors">
+                        ⏹️ Stop
+                    </button>
+                    <div class="flex items-center gap-1 ml-1 text-xs text-slate-600 font-medium">
+                        <span>Speed:</span>
+                        <select id="speedSelect" onchange="changeSpeed()" class="bg-white border border-slate-300 rounded px-2 py-1 text-xs font-semibold">
+                            <option value="0.7">0.7x (Slow)</option>
+                            <option value="0.85" selected>0.85x (Normal)</option>
+                            <option value="1.0">1.0x (Fast)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-6 bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                <span class="text-xs font-bold text-emerald-900 flex items-center gap-1">
+                    <span>💡</span> Tip: Hover or tap highlighted badges like <span class="featured-icon-badge px-1.5 py-0.5 rounded text-[11px] font-extrabold">Safari</span> or <span class="featured-rugby-badge px-1.5 py-0.5 rounded text-[11px] font-extrabold">Rugby</span> for Chinese translations!
+                </span>
+                <button onclick="toggleAllTranslations()" class="text-xs text-emerald-700 hover:text-emerald-800 font-bold underline flex items-center gap-1">
+                    <span>🌐</span> Toggle All Chinese (顯示/隱藏全中譯)
+                </button>
+            </div>
+
+            <!-- Paragraph 1 -->
+            <div class="mb-6 bg-emerald-50/60 p-4 sm:p-5 rounded-2xl border border-emerald-200">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-2xl bg-white p-1.5 rounded-xl shadow-sm border border-emerald-200">🇿🇦</span>
+                    <h3 class="text-xl font-bold text-emerald-800 font-heading">Paragraph 1: Welcome to South Africa!</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="sentence-box bg-white/70 hover:bg-white p-3 rounded-xl border border-emerald-100 cursor-pointer transition-all" onclick="handleSentenceClick(0)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded-full mt-1">🌍 Rainbow Nation</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-0">
+                                <span class="vocab-hl bg-emerald-100 text-emerald-800">South Africa<span class="tooltip-text">南非</span></span>
+                                is a big and sunny country at the southern tip of Africa. ☀️
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-emerald-400" id="trans-0">南非是位於非洲最南端的大型且充滿陽光的國家。</p>
+                    </div>
+
+                    <div class="sentence-box bg-white/70 hover:bg-white p-3 rounded-xl border border-emerald-100 cursor-pointer transition-all" onclick="handleSentenceClick(1)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full mt-1">🏔️ Nature & Oceans</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-1">
+                                It has high mountains, long beaches, and two oceans! 🌊
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-emerald-400" id="trans-1">它擁有高山、長沙灘以及兩座大洋！</p>
+                    </div>
+
+                    <div class="sentence-box bg-white/70 hover:bg-white p-3 rounded-xl border border-emerald-100 cursor-pointer transition-all" onclick="handleSentenceClick(2)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-orange-100 text-orange-800 text-xs font-bold px-2 py-0.5 rounded-full mt-1">🦁 Famous Animals</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-2">
+                                It is famous for amazing nature and wild animals. 🐘
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-emerald-400" id="trans-2">它以壯麗的大自然和野生動物聞名。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paragraph 2 (Focus: Safari) -->
+            <div class="mb-6 bg-amber-50/80 p-4 sm:p-5 rounded-2xl border-2 border-amber-300">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-2xl bg-amber-500 text-white p-1.5 rounded-xl shadow-sm">🛻</span>
+                    <h3 class="text-xl font-bold text-amber-900 font-heading flex items-center gap-2">
+                        Paragraph 2: Going on a Safari 
+                        <span class="text-xs bg-amber-200 text-amber-900 font-extrabold px-2 py-0.5 rounded-full uppercase">Famous Icon #1</span>
+                    </h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="sentence-box bg-white/80 hover:bg-white p-3 rounded-xl border border-amber-200 cursor-pointer transition-all" onclick="handleSentenceClick(3)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-amber-200 text-amber-900 text-xs font-bold px-2 py-0.5 rounded-full mt-1">🛻 Wildlife Tour</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-3">
+                                Many visitors go on a 
+                                <span class="vocab-hl featured-icon-badge">Safari ⭐<span class="tooltip-text">野生探險獵遊</span></span>
+                                in big national parks. 🌳
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-amber-400" id="trans-3">許多遊客會在大型國家公園裡體驗野生探險獵遊（Safari）。</p>
+                    </div>
+
+                    <div class="sentence-box bg-white/80 hover:bg-white p-3 rounded-xl border border-amber-200 cursor-pointer transition-all" onclick="handleSentenceClick(4)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-orange-100 text-orange-800 text-xs font-bold px-2 py-0.5 rounded-full mt-1">🦁 Big Animals</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-4">
+                                You can ride a Jeep to see 
+                                <span class="vocab-hl bg-orange-100 text-orange-800">lions<span class="tooltip-text">獅子</span></span>,
+                                <span class="vocab-hl bg-slate-200 text-slate-800">elephants<span class="tooltip-text">大象</span></span>, and 
+                                <span class="vocab-hl bg-yellow-100 text-yellow-800">rhinos<span class="tooltip-text">犀牛</span></span>. 🦏
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-amber-400" id="trans-4">你可以搭乘吉普車觀看獅子、大象和犀牛。</p>
+                    </div>
+
+                    <div class="sentence-box bg-white/80 hover:bg-white p-3 rounded-xl border border-amber-200 cursor-pointer transition-all" onclick="handleSentenceClick(5)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded-full mt-1">📸 Safari Fun</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-5">
+                                Seeing wild animals up close on a 
+                                <span class="vocab-hl featured-icon-badge">Safari ⭐<span class="tooltip-text">野生探險獵遊</span></span>
+                                is exciting and fun! 📷
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-amber-400" id="trans-5">在 Safari 探險中近距離觀察野生動物非常刺激有趣！</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paragraph 3 (Focus: Rugby) -->
+            <div class="bg-emerald-50/80 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-2xl bg-emerald-700 text-white p-1.5 rounded-xl shadow-sm">🏉</span>
+                    <h3 class="text-xl font-bold text-emerald-900 font-heading flex items-center gap-2">
+                        Paragraph 3: Rugby - South Africa's Favorite Sport
+                        <span class="text-xs bg-emerald-200 text-emerald-900 font-extrabold px-2 py-0.5 rounded-full uppercase">Famous Icon #2</span>
+                    </h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="sentence-box bg-white/80 hover:bg-white p-3 rounded-xl border border-emerald-200 cursor-pointer transition-all" onclick="handleSentenceClick(6)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-teal-100 text-teal-800 text-xs font-bold px-2 py-0.5 rounded-full mt-1">🏆 National Sport</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-6">
+                                <span class="vocab-hl featured-rugby-badge">Rugby ⭐<span class="tooltip-text">英式橄欖球</span></span>
+                                is the most popular sport in South Africa. 🏉
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-teal-400" id="trans-6">英式橄欖球是南非最受歡迎的運動。</p>
+                    </div>
+
+                    <div class="sentence-box bg-white/80 hover:bg-white p-3 rounded-xl border border-emerald-200 cursor-pointer transition-all" onclick="handleSentenceClick(7)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full mt-1">🦌 Springboks Team</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-7">
+                                The national 
+                                <span class="vocab-hl bg-teal-100 text-teal-800">team<span class="tooltip-text">隊伍</span></span>
+                                is called the 
+                                <span class="vocab-hl bg-emerald-200 text-emerald-900">Springboks<span class="tooltip-text">跳羚隊 (南非橄欖球國家隊)</span></span>. 🦌
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-teal-400" id="trans-7">國家隊被稱為「跳羚隊」（Springboks）。</p>
+                    </div>
+
+                    <div class="sentence-box bg-white/80 hover:bg-white p-3 rounded-xl border border-emerald-200 cursor-pointer transition-all" onclick="handleSentenceClick(8)">
+                        <div class="flex items-start gap-2">
+                            <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-0.5 rounded-full mt-1">🏟️ Rugby Stadium</span>
+                            <p class="text-lg font-medium text-slate-800 leading-relaxed" id="sent-8">
+                                Players wear green jerseys and play 
+                                <span class="vocab-hl featured-rugby-badge">Rugby ⭐<span class="tooltip-text">英式橄欖球</span></span>
+                                with an 
+                                <span class="vocab-hl bg-amber-100 text-amber-800">oval ball<span class="tooltip-text">橢圓形球</span></span>
+                                in a big 
+                                <span class="vocab-hl bg-purple-100 text-purple-800">stadium<span class="tooltip-text">體育場</span></span>. 🎉
+                            </p>
+                        </div>
+                        <p class="trans-text text-sm text-slate-500 hidden mt-2 pl-2 border-l-2 border-teal-400" id="trans-8">球員身穿綠色球衣，在大體育場裡用橢圓形球進行橄欖球比賽。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPREHENSION QUIZ -->
+        <section class="bg-white rounded-2xl p-6 shadow-md border border-emerald-200">
+            <div class="flex items-center justify-between mb-6 pb-2 border-b border-slate-100">
+                <div>
+                    <h2 class="text-2xl font-bold text-emerald-800 flex items-center gap-2 font-heading">
+                        <span>📝</span> Comprehension Quiz (閱讀理解小測驗)
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Test your reading comprehension about Safari & Rugby! (測試你的閱讀理解力)</p>
+                </div>
+                <div id="quizScoreBadge" class="hidden bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-3 py-1 rounded-full text-sm">
+                    Score: <span id="scoreVal">0</span>/5
+                </div>
+            </div>
+
+            <div id="quizContainer" class="space-y-6">
+                <!-- Q1 -->
+                <div class="quiz-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-800 mb-1">1. Where is South Africa located? 🇿🇦</p>
+                    <p class="text-xs text-slate-500 mb-3">南非位於哪裡？</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button onclick="checkAnswer(0, 'A', false)" class="q-btn-0 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">A) In East Asia</button>
+                        <button onclick="checkAnswer(0, 'B', true)" class="q-btn-0 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">B) At the southern tip of Africa 🌍</button>
+                        <button onclick="checkAnswer(0, 'C', false)" class="q-btn-0 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">C) In South America</button>
+                    </div>
+                    <div id="feedback-0" class="mt-2 text-sm font-bold hidden"></div>
+                </div>
+
+                <!-- Q2 (Safari) -->
+                <div class="quiz-card bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                    <p class="font-bold text-slate-800 mb-1">2. What can visitors do on a Safari? 🛻</p>
+                    <p class="text-xs text-slate-500 mb-3">遊客在 Safari（探險獵遊）時可以做什麼？</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button onclick="checkAnswer(1, 'A', false)" class="q-btn-1 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">A) Go ice skating</button>
+                        <button onclick="checkAnswer(1, 'B', true)" class="q-btn-1 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">B) Ride a Jeep to see wild animals 🦁</button>
+                        <button onclick="checkAnswer(1, 'C', false)" class="q-btn-1 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">C) Fly a helicopter over snow</button>
+                    </div>
+                    <div id="feedback-1" class="mt-2 text-sm font-bold hidden"></div>
+                </div>
+
+                <!-- Q3 (Rugby) -->
+                <div class="quiz-card bg-emerald-50/50 p-4 rounded-xl border border-emerald-200">
+                    <p class="font-bold text-slate-800 mb-1">3. What is the most popular sport in South Africa? 🏉</p>
+                    <p class="text-xs text-slate-500 mb-3">南非最受歡迎的運動是什麼？</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button onclick="checkAnswer(2, 'A', true)" class="q-btn-2 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">A) Rugby 🏉</button>
+                        <button onclick="checkAnswer(2, 'B', false)" class="q-btn-2 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">B) Ice Hockey</button>
+                        <button onclick="checkAnswer(2, 'C', false)" class="q-btn-2 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">C) Sumo Wrestling</button>
+                    </div>
+                    <div id="feedback-2" class="mt-2 text-sm font-bold hidden"></div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="quiz-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-800 mb-1">4. What is the name of South Africa's national rugby team? 🦌</p>
+                    <p class="text-xs text-slate-500 mb-3">南非橄欖球國家隊的名字是什麼？</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button onclick="checkAnswer(3, 'A', false)" class="q-btn-3 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">A) The Lions</button>
+                        <button onclick="checkAnswer(3, 'B', true)" class="q-btn-3 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">B) The Springboks 🦌</button>
+                        <button onclick="checkAnswer(3, 'C', false)" class="q-btn-3 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">C) The Eagles</button>
+                    </div>
+                    <div id="feedback-3" class="mt-2 text-sm font-bold hidden"></div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="quiz-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-800 mb-1">5. What shape is a rugby ball? 🏈</p>
+                    <p class="text-xs text-slate-500 mb-3">橄欖球是什麼形狀的？</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button onclick="checkAnswer(4, 'A', false)" class="q-btn-4 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">A) Round</button>
+                        <button onclick="checkAnswer(4, 'B', true)" class="q-btn-4 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">B) Oval 🏈</button>
+                        <button onclick="checkAnswer(4, 'C', false)" class="q-btn-4 border border-slate-300 bg-white hover:bg-slate-100 p-2.5 rounded-xl text-left text-sm font-semibold transition-colors">C) Triangular</button>
+                    </div>
+                    <div id="feedback-4" class="mt-2 text-sm font-bold hidden"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Result & Confetti -->
+            <div id="resultBox" class="hidden mt-6 bg-gradient-to-br from-emerald-800 via-green-700 to-amber-600 text-white p-6 rounded-2xl text-center shadow-lg">
+                <span class="text-5xl mb-2 block">🎉</span>
+                <h3 class="text-2xl font-bold">Lekker! Great Job! (太棒了！)</h3>
+                <p class="text-lg mt-2">You scored <span id="finalScore" class="font-extrabold text-amber-200 text-2xl">0</span> out of 5!</p>
+                <p class="text-sm text-amber-100 mt-1">You mastered South Africa's two famous items: Safari and Rugby!</p>
+                <button onclick="resetQuiz()" class="mt-4 bg-white text-emerald-800 font-bold px-6 py-2 rounded-full hover:bg-amber-50 transition-colors shadow-md text-sm">
+                    🔄 Try Again (再試一次)
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 py-6 text-center text-xs">
+        <p>Discover South Africa Reading Explorer • Safari & Rugby Focus • Standard American Female Voice</p>
+    </footer>
+
+    <script>
+        const sentences = [
+            "South Africa is a big and sunny country at the southern tip of Africa.",
+            "It has high mountains, long beaches, and two oceans!",
+            "It is famous for amazing nature and wild animals.",
+            "Many visitors go on a Safari in big national parks.",
+            "You can ride a Jeep to see lions, elephants, and rhinos.",
+            "Seeing wild animals up close on a Safari is exciting and fun!",
+            "Rugby is the most popular sport in South Africa.",
+            "The national team is called the Springboks.",
+            "Players wear green jerseys and play Rugby with an oval ball in a big stadium."
+        ];
+
+        let synth = window.speechSynthesis;
+        let femaleUsVoice = null;
+
+        let isPlaying = false;
+        let currentSentenceIdx = -1;
+        let isPaused = false;
+
+        let userAnswers = [null, null, null, null, null];
+        let currentScore = 0;
+
+        // Select Female Standard American (en-US) Voice
+        function loadFemaleUsVoice() {
+            const voices = synth.getVoices();
+            if (!voices || voices.length === 0) return;
+
+            const preferredFemaleNames = [
+                "samantha", "victoria", "karen", "zira", "jenny", "ava", 
+                "google us english", "microsoft zira", "allison", "susan",
+                "siri", "female", "natural"
+            ];
+
+            // 1. Exact 'en-US' with female voice names
+            femaleUsVoice = voices.find(v => {
+                const langMatch = v.lang === 'en-US' || v.lang === 'en_US';
+                const nameLower = v.name.toLowerCase();
+                return langMatch && preferredFemaleNames.some(name => nameLower.includes(name));
+            });
+
+            // 2. Any voice starting with 'en-US' with preferred female names
+            if (!femaleUsVoice) {
+                femaleUsVoice = voices.find(v => {
+                    const langMatch = v.lang.startsWith('en-US') || v.lang.startsWith('en_US');
+                    const nameLower = v.name.toLowerCase();
+                    return langMatch && preferredFemaleNames.some(name => nameLower.includes(name));
+                });
+            }
+
+            // 3. Fallback to standard 'en-US' voice
+            if (!femaleUsVoice) {
+                femaleUsVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US');
+            }
+
+            // 4. Fallback to any voice starting with 'en-US'
+            if (!femaleUsVoice) {
+                femaleUsVoice = voices.find(v => v.lang.toLowerCase().startsWith('en-us'));
+            }
+
+            // 5. General English fallback
+            if (!femaleUsVoice) {
+                femaleUsVoice = voices.find(v => v.lang.toLowerCase().startsWith('en'));
+            }
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadFemaleUsVoice;
+        }
+        loadFemaleUsVoice();
+
+        function speakWord(word) {
+            stopAudio();
+            let utterance = new SpeechSynthesisUtterance(word);
+            if (!femaleUsVoice) loadFemaleUsVoice();
+            if (femaleUsVoice) utterance.voice = femaleUsVoice;
+            utterance.lang = 'en-US';
+            utterance.rate = parseFloat(document.getElementById('speedSelect').value) || 0.85;
+            synth.speak(utterance);
+        }
+
+        function handleSentenceClick(index) {
+            const transElem = document.getElementById(`trans-${index}`);
+            transElem.classList.remove('hidden');
+            speakSentence(index);
+        }
+
+        function speakSentence(index) {
+            stopAudio();
+            highlightSentence(index);
+
+            const speed = parseFloat(document.getElementById('speedSelect').value) || 0.85;
+            const fullText = sentences[index];
+
+            let utterance = new SpeechSynthesisUtterance(fullText);
+            if (!femaleUsVoice) loadFemaleUsVoice();
+            if (femaleUsVoice) utterance.voice = femaleUsVoice;
+            utterance.lang = 'en-US';
+            utterance.rate = speed;
+            utterance.onend = () => clearHighlight(index);
+            synth.speak(utterance);
+        }
+
+        function highlightSentence(index) {
+            document.querySelectorAll('.sentence-box').forEach(el => el.classList.remove('highlight-sentence'));
+            const target = document.getElementById(`sent-${index}`)?.closest('.sentence-box');
+            if (target) {
+                target.classList.add('highlight-sentence');
+            }
+        }
+
+        function clearHighlight(index) {
+            const target = document.getElementById(`sent-${index}`)?.closest('.sentence-box');
+            if (target) {
+                target.classList.remove('highlight-sentence');
+            }
+        }
+
+        function playFullArticle() {
+            if (isPaused) {
+                synth.resume();
+                isPaused = false;
+                isPlaying = true;
+                return;
+            }
+
+            stopAudio();
+            isPlaying = true;
+            currentSentenceIdx = 0;
+            speakNextInSequence();
+        }
+
+        function speakNextInSequence() {
+            if (!isPlaying || currentSentenceIdx >= sentences.length) {
+                isPlaying = false;
+                currentSentenceIdx = -1;
+                return;
+            }
+
+            highlightSentence(currentSentenceIdx);
+            const speed = parseFloat(document.getElementById('speedSelect').value) || 0.85;
+
+            let utterance = new SpeechSynthesisUtterance(sentences[currentSentenceIdx]);
+            if (!femaleUsVoice) loadFemaleUsVoice();
+            if (femaleUsVoice) utterance.voice = femaleUsVoice;
+            utterance.lang = 'en-US';
+            utterance.rate = speed;
+
+            utterance.onend = () => {
+                clearHighlight(currentSentenceIdx);
+                if (isPlaying) {
+                    currentSentenceIdx++;
+                    speakNextInSequence();
+                }
+            };
+
+            synth.speak(utterance);
+        }
+
+        function pauseAudio() {
+            if (synth.speaking && !synth.paused) {
+                synth.pause();
+                isPaused = true;
+            }
+        }
+
+        function stopAudio() {
+            isPlaying = false;
+            isPaused = false;
+            if (synth.speaking || synth.paused) {
+                synth.cancel();
+            }
+            if (currentSentenceIdx >= 0) {
+                clearHighlight(currentSentenceIdx);
+            }
+            currentSentenceIdx = -1;
+            document.querySelectorAll('.sentence-box').forEach(el => el.classList.remove('highlight-sentence'));
+        }
+
+        function changeSpeed() {
+            if (isPlaying) {
+                playFullArticle();
+            }
+        }
+
+        let allExpanded = false;
+        function toggleAllTranslations() {
+            allExpanded = !allExpanded;
+            for (let i = 0; i < sentences.length; i++) {
+                const transElem = document.getElementById(`trans-${i}`);
+                if (transElem) {
+                    if (allExpanded) {
+                        transElem.classList.remove('hidden');
+                    } else {
+                        transElem.classList.add('hidden');
+                    }
+                }
+            }
+        }
+
+        function checkAnswer(qIdx, option, isCorrect) {
+            if (userAnswers[qIdx] !== null) return;
+
+            userAnswers[qIdx] = isCorrect;
+            const buttons = document.querySelectorAll(`.q-btn-${qIdx}`);
+            const feedbackElem = document.getElementById(`feedback-${qIdx}`);
+
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+            });
+
+            if (isCorrect) {
+                feedbackElem.textContent = "✨ Correct! (正確!)";
+                feedbackElem.className = "mt-2 text-sm font-bold text-emerald-600";
+                currentScore++;
+            } else {
+                feedbackElem.textContent = "❌ Not quite right. (答錯囉！)";
+                feedbackElem.className = "mt-2 text-sm font-bold text-red-600";
+            }
+            feedbackElem.classList.remove('hidden');
+
+            document.getElementById('quizScoreBadge').classList.remove('hidden');
+            document.getElementById('scoreVal').textContent = currentScore;
+
+            if (!userAnswers.includes(null)) {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            const resultBox = document.getElementById('resultBox');
+            const finalScoreElem = document.getElementById('finalScore');
+            finalScoreElem.textContent = currentScore;
+            resultBox.classList.remove('hidden');
+
+            if (currentScore >= 3 && typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function resetQuiz() {
+            userAnswers = [null, null, null, null, null];
+            currentScore = 0;
+            document.getElementById('scoreVal').textContent = "0";
+            document.getElementById('quizScoreBadge').classList.add('hidden');
+            document.getElementById('resultBox').classList.add('hidden');
+
+            for (let i = 0; i < 5; i++) {
+                const feedbackElem = document.getElementById(`feedback-${i}`);
+                if (feedbackElem) feedbackElem.classList.add('hidden');
+
+                const buttons = document.querySelectorAll(`.q-btn-${i}`);
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

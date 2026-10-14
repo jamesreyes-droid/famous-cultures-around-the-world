@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover the UK: Harry Potter & Red Telephone Boxes!</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'uk-red': '#C8102E',
+                        'uk-darkred': '#8B0000',
+                        'uk-blue': '#00247D',
+                        'uk-navy': '#0A1128',
+                        'uk-gold': '#FFD700',
+                        'magical-purple': '#4A154B',
+                        'uk-cream': '#F4F7FA'
+                    },
+                    fontFamily: {
+                        'heading': ['Fredoka', 'sans-serif'],
+                        'body': ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #F4F7FA;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .tag-harrypotter {
+            background-color: #F3E8FF;
+            color: #5B21B6;
+            border: 2px solid #7C3AED;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 6px rgba(124, 58, 237, 0.25);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .tag-harrypotter:hover {
+            transform: scale(1.05);
+        }
+
+        .tag-phonebox {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border: 2px solid #DC2626;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 6px rgba(220, 38, 38, 0.25);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .tag-phonebox:hover {
+            transform: scale(1.05);
+        }
+
+        .sentence-active {
+            background-color: #FEF08A !important;
+            border-radius: 6px;
+            padding: 2px 4px;
+            box-shadow: 0 0 8px rgba(250, 204, 21, 0.7);
+            transition: all 0.2s ease;
+        }
+
+        .vocab-tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px dashed #00247D;
+            color: #00247D;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .vocab-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 160px;
+            background-color: #0A1128;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 6px 8px;
+            position: absolute;
+            z-index: 30;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+        .vocab-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .bounce-slow {
+            animation: bounceSlow 2s infinite;
+        }
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header / Banner -->
+    <header class="bg-gradient-to-r from-uk-navy via-uk-blue to-uk-red text-white shadow-lg sticky top-0 z-50 border-b-4 border-uk-gold">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="text-4xl bounce-slow">🇬🇧</span>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-wide text-uk-gold">Explore the UK! 英國文化之旅</h1>
+                    <p class="text-xs md:text-sm text-blue-100 font-bold">Grade 6 EFL Visual Reading (Female US Accent 🎙️ - Clean Voice)</p>
+                </div>
+            </div>
+            
+            <!-- Quick Audio Controls -->
+            <div class="flex items-center space-x-2 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
+                <span class="text-xs font-bold text-uk-gold hidden sm:inline"><i class="fas fa-venus text-pink-300"></i> US Female Voice</span>
+                <button onclick="toggleSpeed()" id="speedBtn" class="bg-uk-gold text-amber-950 font-bold text-xs px-3 py-1 rounded-full hover:bg-yellow-300 transition shadow">
+                    ⚡ Speed: <span id="speedVal">1.0x</span>
+                </button>
+                <button onclick="stopSpeech()" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold transition shadow flex items-center space-x-1">
+                    <i class="fas fa-stop"></i> <span>Stop 停止</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow space-y-8">
+
+        <!-- Visual Cue Spotlight Cards -->
+        <section class="bg-gradient-to-br from-blue-50 via-purple-50 to-red-50 p-6 rounded-3xl border-2 border-blue-200 shadow-md space-y-4">
+            <div class="text-center space-y-1">
+                <span class="bg-uk-gold text-amber-950 text-xs font-black uppercase px-3 py-1 rounded-full shadow-sm">Target Vocabulary 重點單字</span>
+                <h2 class="text-2xl font-black text-gray-800">Two Famous UK Highlights!</h2>
+                <p class="text-xs md:text-sm text-gray-600 font-semibold">Tap any card or speaker button 🔊 to hear clean English audio without icon sounds!</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <!-- Card 1: Harry Potter -->
+                <div onclick="speakWord('Harry Potter')" class="bg-white p-4 rounded-2xl border-2 border-purple-400 shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-purple-100 border-2 border-purple-400 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition">
+                            🧙‍♂️
+                        </div>
+                        <div>
+                            <span class="tag-harrypotter text-lg">
+                                ✨ Harry Potter
+                            </span>
+                            <p class="text-xs text-gray-600 font-bold mt-1">哈利波特 (魔法師)</p>
+                            <span class="inline-block text-[10px] bg-purple-100 text-purple-900 font-bold px-2 py-0.5 rounded mt-0.5">Famous Wizard Story 🪄</span>
+                        </div>
+                    </div>
+                    <button class="w-12 h-12 bg-purple-600 group-hover:bg-purple-700 text-white rounded-full flex items-center justify-center shadow-md text-xl transition">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+
+                <!-- Card 2: Red Telephone Box -->
+                <div onclick="speakWord('Red Telephone Box')" class="bg-white p-4 rounded-2xl border-2 border-red-400 shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-red-100 border-2 border-red-400 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition">
+                            ☎️
+                        </div>
+                        <div>
+                            <span class="tag-phonebox text-lg">
+                                ☎️ Red Telephone Boxes
+                            </span>
+                            <p class="text-xs text-gray-600 font-bold mt-1">紅色電話亭</p>
+                            <span class="inline-block text-[10px] bg-red-100 text-red-900 font-bold px-2 py-0.5 rounded mt-0.5">Iconic Street Booth 📞</span>
+                        </div>
+                    </div>
+                    <button class="w-12 h-12 bg-uk-red group-hover:bg-red-700 text-white rounded-full flex items-center justify-center shadow-md text-xl transition">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Short Reading Article Container -->
+        <section class="bg-white rounded-3xl shadow-xl border-2 border-blue-200 overflow-hidden">
+            <!-- Article Header Bar -->
+            <div class="bg-gradient-to-r from-uk-blue via-uk-navy to-uk-red p-5 text-white flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <span class="bg-uk-gold text-amber-950 font-black text-xs px-3 py-1 rounded-full uppercase">Short Story 簡短文章</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-uk-gold mt-1">Famous UK: Magic & Phone Boxes 英國風采</h2>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="readFullArticle()" class="bg-uk-gold hover:bg-yellow-300 text-amber-950 font-black px-4 py-2 rounded-xl shadow-md flex items-center space-x-2 transition transform active:scale-95 text-sm">
+                        <i class="fas fa-play-circle text-lg"></i>
+                        <span>Read Full Story 朗讀全文</span>
+                    </button>
+                    <button onclick="toggleAllChinese()" class="bg-white/20 hover:bg-white/30 text-white font-bold px-3 py-2 rounded-xl border border-white/30 text-xs transition">
+                        <i class="fas fa-language text-base"></i> <span id="toggleAllBtnText">Show Chinese 顯示中文</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reading Paragraphs -->
+            <div class="p-5 md:p-8 space-y-6 text-base md:text-lg leading-relaxed">
+
+                <!-- Sentence 1: Country intro -->
+                <div class="p-4 bg-blue-50/60 rounded-2xl border border-blue-200 space-y-2 hover:border-blue-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-blue-800 bg-blue-200 px-2.5 py-0.5 rounded-full">Part 1 📍 The Country 國家</span>
+                        <button onclick="speakSentence('s1')" class="text-uk-blue bg-blue-200 hover:bg-blue-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s1_1" class="sentence-node">The <span class="vocab-tooltip" onclick="speakWord('United Kingdom')">United Kingdom<span class="tooltip-text">聯合王國 (英國) 🇬🇧</span></span> (UK) is an island country in <span class="vocab-tooltip" onclick="speakWord('Europe')">Europe<span class="tooltip-text">歐洲 🌍</span></span>.</span>
+                        <span id="s1_2" class="sentence-node">It has a rich history and many fun treasures!</span>
+                    </p>
+                    <div id="trans1" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-blue-200 font-semibold">
+                        🇨🇳 英國 (UK) 是歐洲的一個島國。它擁有豐富的歷史與許多有趣的寶藏！
+                    </div>
+                    <button onclick="toggleTrans('trans1')" class="text-xs font-bold text-blue-700 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 2: Harry Potter -->
+                <div class="p-4 bg-purple-50/60 rounded-2xl border border-purple-200 space-y-2 hover:border-purple-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-purple-900 bg-purple-200 px-2.5 py-0.5 rounded-full">Part 2 ✨ Magic Story 魔法故事</span>
+                        <button onclick="speakSentence('s2')" class="text-purple-800 bg-purple-200 hover:bg-purple-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s2_1" class="sentence-node">One famous character is <span class="tag-harrypotter" onclick="speakWord('Harry Potter')">✨ Harry Potter</span>.</span>
+                        <span id="s2_2" class="sentence-node">He is a young <span class="vocab-tooltip" onclick="speakWord('wizard')">wizard<span class="tooltip-text">巫師 / 魔法師 🧙‍♂️</span></span> who learns <span class="vocab-tooltip" onclick="speakWord('magic')">magic<span class="tooltip-text">魔法 🪄</span></span> at school.</span>
+                        <span id="s2_3" class="sentence-node">Children around the world read his books and watch his movies!</span>
+                    </p>
+                    <div id="trans2" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-purple-200 font-semibold">
+                        🇨🇳 一個著名的角色是 <strong>Harry Potter (哈利波特)</strong>。他是一位在學校學習魔法的年輕巫師。世界各地的孩子都閱讀他的書籍並觀看他的電影！
+                    </div>
+                    <button onclick="toggleTrans('trans2')" class="text-xs font-bold text-purple-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 3: Red Telephone Boxes -->
+                <div class="p-4 bg-red-50/60 rounded-2xl border border-red-200 space-y-2 hover:border-red-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-red-900 bg-red-200 px-2.5 py-0.5 rounded-full">Part 3 ☎️ Red Phone Box 紅色電話亭</span>
+                        <button onclick="speakSentence('s3')" class="text-uk-red bg-red-200 hover:bg-red-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s3_1" class="sentence-node">Another famous symbol is the <span class="tag-phonebox" onclick="speakWord('Red Telephone Box')">☎️ Red Telephone Box</span>.</span>
+                        <span id="s3_2" class="sentence-node">You can see these bright red booths on UK <span class="vocab-tooltip" onclick="speakWord('streets')">streets<span class="tooltip-text">街道 🛣️</span></span>.</span>
+                        <span id="s3_3" class="sentence-node">Visitors love to take <span class="vocab-tooltip" onclick="speakWord('photos')">photos<span class="tooltip-text">照片 📸</span></span> with them!</span>
+                    </p>
+                    <div id="trans3" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-red-200 font-semibold">
+                        🇨🇳 另一個著名的象徵是 <strong>Red Telephone Box (紅色電話亭)</strong>。你能在英國街道上看到這些鮮紅色的亭子。遊客們非常喜歡和它們拍照！
+                    </div>
+                    <button onclick="toggleTrans('trans3')" class="text-xs font-bold text-red-700 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+                <!-- Sentence 4: Summary -->
+                <div class="p-4 bg-blue-50/60 rounded-2xl border border-blue-200 space-y-2 hover:border-blue-400 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-blue-900 bg-blue-200 px-2.5 py-0.5 rounded-full">Part 4 ✨ Fun Summary 快樂結語</span>
+                        <button onclick="speakSentence('s4')" class="text-uk-blue bg-blue-200 hover:bg-blue-300 p-1.5 rounded-full text-xs font-bold transition">
+                            🔊 Read
+                        </button>
+                    </div>
+                    <p class="font-bold text-gray-800">
+                        <span id="s4_1" class="sentence-node"><span class="tag-harrypotter" onclick="speakWord('Harry Potter')">✨ Harry Potter</span> and <span class="tag-phonebox" onclick="speakWord('Red Telephone Boxes')">☎️ Red Telephone Boxes</span> make the UK full of wonder.</span>
+                        <span id="s4_2" class="sentence-node">Welcome to explore British magic and culture!</span>
+                    </p>
+                    <div id="trans4" class="hidden text-sm text-gray-600 bg-white p-2.5 rounded-xl border border-blue-200 font-semibold">
+                        🇨🇳 <strong>Harry Potter</strong> 與 <strong>紅色電話亭</strong> 讓英國充滿奇蹟。歡迎來探索英國的魔法與文化！
+                    </div>
+                    <button onclick="toggleTrans('trans4')" class="text-xs font-bold text-blue-800 hover:underline">
+                        🌐 Toggle Chinese (切換中文)
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Visual Picture Flashcards -->
+        <section class="bg-white p-6 rounded-3xl shadow-lg border-2 border-uk-gold space-y-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-uk-gold rounded-2xl flex items-center justify-center text-amber-950 font-bold text-xl shadow-sm">
+                    🖼️
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-gray-800">Visual Picture Cards 視覺圖解單字</h3>
+                    <p class="text-xs text-gray-500 font-bold">Tap card to hear audio & read Traditional Chinese!</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                <div onclick="speakWord('United Kingdom')" class="bg-blue-50 border-2 border-blue-300 hover:border-blue-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🇬🇧</div>
+                    <h4 class="font-black text-blue-900 text-sm">United Kingdom</h4>
+                    <p class="text-xs text-blue-700 font-bold">英國</p>
+                </div>
+                <div onclick="speakWord('Wizard')" class="bg-purple-50 border-2 border-purple-300 hover:border-purple-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🧙‍♂️</div>
+                    <h4 class="font-black text-purple-900 text-sm">Wizard</h4>
+                    <p class="text-xs text-purple-700 font-bold">巫師</p>
+                </div>
+                <div onclick="speakWord('Magic')" class="bg-indigo-50 border-2 border-indigo-300 hover:border-indigo-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">🪄</div>
+                    <h4 class="font-black text-indigo-900 text-sm">Magic</h4>
+                    <p class="text-xs text-indigo-700 font-bold">魔法</p>
+                </div>
+                <div onclick="speakWord('Telephone Box')" class="bg-red-50 border-2 border-red-300 hover:border-red-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">☎️</div>
+                    <h4 class="font-black text-red-900 text-sm">Phone Box</h4>
+                    <p class="text-xs text-red-700 font-bold">電話亭</p>
+                </div>
+                <div onclick="speakWord('Call')" class="bg-green-50 border-2 border-green-300 hover:border-green-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm">
+                    <div class="text-3xl mb-1">📞</div>
+                    <h4 class="font-black text-green-900 text-sm">Call</h4>
+                    <p class="text-xs text-green-700 font-bold">打電話</p>
+                </div>
+                <div onclick="speakWord('Street')" class="bg-amber-50 border-2 border-amber-300 hover:border-amber-500 p-3 rounded-2xl text-center cursor-pointer transition transform hover:-translate-y-1 shadow-sm col-span-2 sm:col-span-1">
+                    <div class="text-3xl mb-1">🛣️</div>
+                    <h4 class="font-black text-amber-900 text-sm">Street</h4>
+                    <p class="text-xs text-amber-700 font-bold">街道</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Comprehension Quiz -->
+        <section class="bg-gradient-to-br from-uk-navy via-uk-blue to-uk-darkred p-6 md:p-8 rounded-3xl text-white shadow-xl space-y-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-uk-gold rounded-2xl flex items-center justify-center text-amber-950 font-bold text-2xl shadow-md">
+                    ⭐
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-uk-gold">Short Quiz 閱讀理解小測驗</h3>
+                    <p class="text-xs text-blue-100 font-bold">Tap the correct answer for all 4 questions!</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-gray-800" id="quizContainer">
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        1. Who is <span class="tag-harrypotter text-xs">✨ Harry Potter</span>? <span class="text-xs font-normal text-gray-500">(Harry Potter 是誰？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 1, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left">A) A young wizard (一位年輕巫師) 🧙‍♂️</button>
+                        <button onclick="checkAnswer(this, 1, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left">B) A police officer (一位警察) 👮</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        2. What color are the famous telephone boxes in the UK? <span class="text-xs font-normal text-gray-500">(英國著名的電話亭是什麼顏色？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 2, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left">A) Bright Yellow (鮮黃色) 💛</button>
+                        <button onclick="checkAnswer(this, 2, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left">B) Bright Red (鮮紅色) ❤️</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        3. What does Harry Potter learn at school? <span class="text-xs font-normal text-gray-500">(Harry Potter 在學校學習什麼？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 3, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left">A) Magic (魔法) 🪄</button>
+                        <button onclick="checkAnswer(this, 3, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left">B) Driving cars (開車) 🚗</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-md space-y-2">
+                    <p class="font-black text-gray-900">
+                        4. What do visitors like to do with the <span class="tag-phonebox text-xs">☎️ Red Telephone Boxes</span>? <span class="text-xs font-normal text-gray-500">(遊客喜歡對紅色電話亭做什麼？)</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="checkAnswer(this, 4, true)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left">A) Take photos (拍照) 📸</button>
+                        <button onclick="checkAnswer(this, 4, false)" class="q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left">B) Paint them purple (塗成紫色) 🎨</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Result -->
+            <div id="quizResult" class="hidden bg-uk-gold text-amber-950 p-6 rounded-2xl text-center space-y-2 shadow-xl animate-bounce">
+                <div class="text-4xl">🌟 🏆 🇬🇧</div>
+                <h4 class="text-2xl font-black">Super Champion! 太棒了！</h4>
+                <p id="scoreText" class="text-lg font-extrabold">You got 4 / 4 correct!</p>
+                <button onclick="resetQuiz()" class="mt-2 bg-uk-navy hover:bg-black text-white font-black text-xs px-5 py-2.5 rounded-xl shadow transition">
+                    Play Again 重新答題
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-4 text-center text-xs border-t-4 border-uk-red">
+        <p>🇬🇧 Discover UK EFL Visual Reader | Grade 6 A0/A1 Level Learning Tool</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const synth = window.speechSynthesis;
+        let currentRate = 1.0;
+        let femaleUSVoice = null;
+
+        /**
+         * SANITIZATION FUNCTION:
+         * Strips all emojis and pictographs so Web Speech API never speaks emoji descriptions.
+         */
+        function cleanTextForSpeech(text) {
+            if (!text) return "";
+            return text
+                // Standard Emoji ranges & symbols
+                .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2300}-\u{23FF}\u{2B50}\u{2B55}]/gu, '')
+                // Extra special characters or UI indicators
+                .replace(/[⭐🎬🏀🎥🌟📣🌎🍲🏊😴📸🪄🧙‍♂️☎️📞🛣️🏻🏼🏽🏾🏿]/g, '')
+                .trim();
+        }
+
+        // Voice Filter for Female Standard American (US) Accent
+        function loadFemaleUSVoice() {
+            if (!synth) return;
+            const voices = synth.getVoices();
+            const femaleUSKeywords = ['samantha', 'zira', 'victoria', 'google us english', 'jenny', 'aria', 'ava', 'kendra', 'allison', 'susan', 'michelle', 'female'];
+
+            femaleUSVoice = voices.find(v => 
+                (v.lang === 'en-US' || v.lang === 'en_US') && 
+                femaleUSKeywords.some(keyword => v.name.toLowerCase().includes(keyword))
+            );
+
+            if (!femaleUSVoice) {
+                femaleUSVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US');
+            }
+
+            if (!femaleUSVoice) {
+                femaleUSVoice = voices.find(v => 
+                    v.lang.startsWith('en') && 
+                    femaleUSKeywords.some(keyword => v.name.toLowerCase().includes(keyword))
+                );
+            }
+
+            if (!femaleUSVoice && voices.length > 0) {
+                femaleUSVoice = voices[0];
+            }
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadFemaleUSVoice;
+        }
+        loadFemaleUSVoice();
+
+        // Web Audio API Sound Effects synth for Quiz
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(164.81, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                }
+            } catch (e) {
+                console.log('Audio Context error:', e);
+            }
+        }
+
+        const sentences = [
+            { id: "s1_1", text: "The United Kingdom (UK) is an island country in Europe." },
+            { id: "s1_2", text: "It has a rich history and many fun treasures!" },
+            { id: "s2_1", text: "One famous character is Harry Potter." },
+            { id: "s2_2", text: "He is a young wizard who learns magic at school." },
+            { id: "s2_3", text: "Children around the world read his books and watch his movies!" },
+            { id: "s3_1", text: "Another famous symbol is the Red Telephone Box." },
+            { id: "s3_2", text: "You can see these bright red booths on UK streets." },
+            { id: "s3_3", text: "Visitors love to take photos with them!" },
+            { id: "s4_1", text: "Harry Potter and Red Telephone Boxes make the UK full of wonder." },
+            { id: "s4_2", text: "Welcome to explore British magic and culture!" }
+        ];
+
+        function toggleSpeed() {
+            if (currentRate === 1.0) {
+                currentRate = 0.75;
+                document.getElementById('speedVal').innerText = "0.75x (Slow)";
+            } else {
+                currentRate = 1.0;
+                document.getElementById('speedVal').innerText = "1.0x (Normal)";
+            }
+        }
+
+        function configureUtterance(rawText) {
+            // Clean text before creating utterance
+            const cleanedText = cleanTextForSpeech(rawText);
+            const utter = new SpeechSynthesisUtterance(cleanedText);
+            utter.rate = currentRate;
+            utter.lang = 'en-US';
+            if (femaleUSVoice) {
+                utter.voice = femaleUSVoice;
+            }
+            return utter;
+        }
+
+        function speakWord(word) {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            const utter = configureUtterance(word);
+            synth.speak(utter);
+        }
+
+        function speakSentence(partId) {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            const sentenceNodes = document.querySelectorAll(`[id^="${partId}_"]`);
+            let rawPartText = "";
+            sentenceNodes.forEach(node => {
+                rawPartText += node.innerText + " ";
+                node.classList.add('sentence-active');
+            });
+
+            const utter = configureUtterance(rawPartText);
+            utter.onend = () => clearHighlights();
+            synth.speak(utter);
+        }
+
+        function readFullArticle() {
+            if (!synth) return;
+            synth.cancel();
+            clearHighlights();
+
+            if (!femaleUSVoice) loadFemaleUSVoice();
+            let index = 0;
+
+            function playNext() {
+                if (index >= sentences.length) {
+                    clearHighlights();
+                    return;
+                }
+
+                clearHighlights();
+                const current = sentences[index];
+                const node = document.getElementById(current.id);
+                if (node) node.classList.add('sentence-active');
+
+                const utter = configureUtterance(current.text);
+                
+                utter.onend = () => {
+                    index++;
+                    playNext();
+                };
+
+                synth.speak(utter);
+            }
+
+            playNext();
+        }
+
+        function stopSpeech() {
+            if (synth) synth.cancel();
+            clearHighlights();
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.sentence-node').forEach(el => {
+                el.classList.remove('sentence-active');
+            });
+        }
+
+        function toggleTrans(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        let allShow = false;
+        function toggleAllChinese() {
+            allShow = !allShow;
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`trans${i}`);
+                if (el) {
+                    if (allShow) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                }
+            }
+            document.getElementById('toggleAllBtnText').innerText = allShow ? "Hide Chinese 隱藏中文" : "Show Chinese 顯示中文";
+        }
+
+        let answeredCount = 0;
+        let score = 0;
+
+        function checkAnswer(btn, qNum, isCorrect) {
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('.q-btn');
+
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.className = "q-btn border-2 border-gray-200 p-3 rounded-xl text-left opacity-60";
+            });
+
+            if (isCorrect) {
+                btn.className = "q-btn border-2 border-green-500 bg-green-100 text-green-900 font-black p-3 rounded-xl text-left";
+                btn.innerHTML += " ✓ Correct!";
+                score++;
+                playSound('correct');
+                confetti({ particleCount: 35, spread: 65, origin: { y: 0.8 } });
+            } else {
+                btn.className = "q-btn border-2 border-red-400 bg-red-100 text-red-900 font-black p-3 rounded-xl text-left";
+                btn.innerHTML += " ✗ Try again next time";
+                playSound('incorrect');
+            }
+
+            answeredCount++;
+            if (answeredCount === 4) {
+                setTimeout(() => {
+                    document.getElementById('quizResult').classList.remove('hidden');
+                    document.getElementById('scoreText').innerText = `You scored ${score} / 4! 🎉`;
+                }, 500);
+            }
+        }
+
+        function resetQuiz() {
+            answeredCount = 0;
+            score = 0;
+            document.getElementById('quizResult').classList.add('hidden');
+            
+            const buttons = document.querySelectorAll('.q-btn');
+            buttons.forEach(b => {
+                b.disabled = false;
+                b.className = "q-btn border-2 border-gray-200 p-3 rounded-xl hover:bg-blue-50 text-left";
+                b.innerHTML = b.innerHTML.replace(" ✓ Correct!", "").replace(" ✗ Try again next time", "");
+            });
+        }
+    </script>
+</body>
+</html>
